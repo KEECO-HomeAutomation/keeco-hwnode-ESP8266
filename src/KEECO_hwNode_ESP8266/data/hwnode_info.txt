@@ -1,0 +1,41 @@
+device : {"
+    
+    name: "Whatever",
+    
+    UUID: "179f0e2e-7960-4cfb-b407-99a33b8818cc"
+    
+    io: [
+        {name: "#1", type: "digital_out", "range": "{0, 1}"},
+        {name: "#2", type: "digital_out", "range": "{1500, 3000, 7425, 10002}"},
+        {name: "#3", type: "digital_in",  "range": "[-50; 100]"},
+    ],
+    
+    
+    templates: [
+        {
+            name: "Switch",
+            io: {
+                "switch_onoff": "#1"
+            }
+        },
+        
+        {
+            name: "Motor RPM",
+            io: {
+                "rpm_select": "#2"
+            }
+        },
+        
+        {
+            name: "Thermometer",
+            
+            template_args: {
+                temperature_scale: "Fahrenheit"
+            }
+            
+            io: {
+                "temperature_value": "#3"
+            }
+        }
+    ]
+}
