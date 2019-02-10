@@ -1,22 +1,46 @@
 # keeco-hwnode-ESP8266
-Code that runs on ESP8266 targets converting them to hardware nodes that can connect to keeco hubs.
 
-On first startup the device creates and stores a UUID in the EEPROM. Later on the same UUID is used.
+Code that runs on ESP8266 targets converting them to hardware nodes that can connect to keeco hubs. The server-hw_node connection is MQTT, hw_node configuration is possible via a web browser.
 
-During the startup, after the CONFIG_AVAIL message is transmitted over the serial port it is possible to configure the WiFi credentials using "SSID,Password" format.
-The configuration is possible until the CONFIG_NOT_AVAIL message.
+## Getting Started
 
-The hardware end node appears as a SoftAP where WiFi credentials can be set. SSID format: KEECO_AP_*ChipID*
+The project requires uploading the data folder to the ESP8266 device. The project includes a tools folder with a jar file. It enables an "ESP8266 Sketch Data Upload" menu item in the Arduino IDE where you can do so. Also after downloading the program itself you can download data to your device using a web browser.
 
-Hardware Node information can be requested via HTTP:
+Navigate to your device's IP address and choose from the available options (links).
 
-/info - schema file descriptor for hardware end node characteristics
+### Prerequisites
 
-/uuid - UUID that identifies the hardware end node
+What things you need to install the software and how to install them
 
-/edit - Browser based file manager
+- Arduino IDE
 
-All of the above + WiFi settings can be reached from the root page.
+- Non-shipping libraries are included with the related URL commented
+
+- On the server side you need a KEECO HUB device to enjoy full functionality.
+
+- For configuring the Device to join a WiFi network you only need a web-browser 
+
+### Installing
+
+- Pull the project from GitHub
+
+- Using your Arduino IDE download the data folder by using the "ESP8266 Sketch Data Upload" menu item
+
+- Build and download you code
+
+- Observe your device's soft AP address in the Serial Monitor
+
+- Connect to your softAP (password: 12345678) and navigate to your device's IP address in your web-browser
+
+- Connect your device to your infrastructure WiFi network
+
+- Modify the txt file in the data folder if neccessary and reupload it - this step is needed if you are specifying a new schema
 
 
-Requested includes are identified in the code with URLs
+## Running the tests
+
+TBD
+
+
+
+
