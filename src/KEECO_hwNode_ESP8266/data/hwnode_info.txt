@@ -1,41 +1,36 @@
-device : {"
-    
-    name: "Whatever",
-    
-    UUID: "UUID_PLACEHOLDER"
-    
-    io: [
-        {name: "#1", type: "digital_out", "range": "{0, 1}"},
-        {name: "#2", type: "digital_out", "range": "{1500, 3000, 7425, 10002}"},
-        {name: "#3", type: "digital_in",  "range": "[-50; 100]"},
-    ],
-    
-    
-    templates: [
-        {
-            name: "Switch",
-            io: {
-                "switch_onoff": "#1"
-            }
-        },
-        
-        {
-            name: "Motor RPM",
-            io: {
-                "rpm_select": "#2"
-            }
-        },
-        
-        {
-            name: "Thermometer",
-            
-            template_args: {
-                temperature_scale: "Fahrenheit"
-            }
-            
-            io: {
-                "temperature_value": "#3"
-            }
-        }
-    ]
+{
+	"uuid": "UUID_PLACEHOLDER",
+	"name": "KEECO Switch",
+	"endpoints": [
+		{
+			"name": "relayPin1",
+			"output": true,
+			"range": "0,1"
+		},
+		{
+			"name": "relayPin2",
+			"output": true,
+			"range": "0,1"
+		}
+	],
+	"templates": [
+		{
+			"name": "switch",
+			"mappings": [
+				{
+					"name": "on",
+					"endpoint": "relayPin1"
+				}
+			]
+		},
+		{
+			"name": "switch",
+			"mappings": [
+				{
+					"name": "on",
+					"endpoint": "relayPin2"
+				}
+			]
+		}
+	]
 }

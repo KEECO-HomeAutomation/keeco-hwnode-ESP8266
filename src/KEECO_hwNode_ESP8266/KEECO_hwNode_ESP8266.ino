@@ -81,10 +81,10 @@ void setup() {
 }
 
 void loop() {
-  delay(1000);
+  //delay(1000);
   webserverInLoop();
   mqttInLoop();
   timer.tick();
   handleIO();
-  Serial.println("Running...");
+  //Serial.println("Running...");
 }
