@@ -1,21 +1,21 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <EEPROM.h>
-#include <WiFiClient.h> 
+#include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <timer.h>             //https://github.com/contrem/arduino-timer
 #include <FS.h>
 #include <ESP8266TrueRandom.h> //https://github.com/marvinroger/ESP8266TrueRandom, for the UUID generation
-#include <ArduinoMqttClient.h> //https://github.com/arduino-libraries/ArduinoMqttClient
- 
+#include <PubSubClient.h>      //https://pubsubclient.knolleary.net/api.html 
+
 
 #define DEBUG     //to enable debug purpose serial output 
 #define OTA       //not yet implemented
-#define AP        //to enable Soft Access Point
 #define AUT_IO    //to enable autonomous functions
 
- ESP8266WiFiMulti WiFiMulti;
+ESP8266WiFiMulti WiFiMulti;
+WiFiClient wifiClient;
 
 ESP8266WebServer webserver(80);
 IPAddress apIP(192, 168, 4, 1);
@@ -30,15 +30,17 @@ char WiFi_Password[65] = "";
 char AP_SSID[33] = {0};
 char *AP_Password = "12345678";
 
-//for the mDNS identification, name of the Hardware Node
-char hostString[17] = {0};  
+//for the mDNS identification, name of the Hardware Node. Populated in the start_mDNS() function
+char hostString[17] = {0};
+
+//String that contains the data from the infoTXT file on the FS
+char contentOfInfoTxt[1024];
 
 //MQTT globals
-const char broker[] = "test.mosquitto.org";
-const char topic[]  = "arduino/simple";
+IPAddress mqttServer(172, 16, 0, 2);
 
 //#DeviceUUID - identifies the device at the server application
-char deviceUUID[37];        
+char deviceUUID[37];
 
 //Status of WiFi connection
 bool wifiIsConnected = false;
@@ -46,35 +48,43 @@ bool wifiIsConnected = false;
 //timer for various tasks - for future scalability
 auto timer = timer_create_default();
 
+//for Browser based file manager
+Dir dir;
 
-void setup() {  
+void setup() {
+  //Init Serial port
   Serial.setTimeout(1000);
   Serial.begin(115200);
-  while(!Serial);
+  while (!Serial);
   Serial.println("Starting up KEECO HW Node...");
 
   //Filesystem is used to send HW Node Info over HTTP
   SPIFFS.begin();
-  
-  loadWifiCredentials();
+  initDirStructureOnFS();
+  //Loads UUID from EEPROM
   loadDeviceUUID();
+
+  //loading data from the infoFile on th FS
+  readInfoFileFromFS();
+
+  //loading WiFi credentials from EEPROM
+  loadWifiCredentials();
   WiFiMulti.addAP(WiFi_SSID, WiFi_Password);
   WiFi.onEvent(WiFiEvent);
-  
+
   //provides interface to configure WiFi credentials at startup - "SSID,Password" format
   checkIfConfigModeReq(10000, true);
-    
-  configureAPSettings();
+
+  //start SoftAP and Webserver to enable WiFi configuration via browser
+  startSoftAP();
   startWebserver();
-  connectToMqttBroker();
-  initializeMqttSession();
 }
 
 void loop() {
   delay(1000);
   webserverInLoop();
-  handleIO();
-  mqttInLoop(); 
+  mqttInLoop();
   timer.tick();
+  handleIO();
   Serial.println("Running...");
 }

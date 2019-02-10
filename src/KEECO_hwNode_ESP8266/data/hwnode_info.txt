@@ -2,7 +2,7 @@ device : {"
     
     name: "Whatever",
     
-    UUID: "179f0e2e-7960-4cfb-b407-99a33b8818cc"
+    UUID: "UUID_PLACEHOLDER"
     
     io: [
         {name: "#1", type: "digital_out", "range": "{0, 1}"},

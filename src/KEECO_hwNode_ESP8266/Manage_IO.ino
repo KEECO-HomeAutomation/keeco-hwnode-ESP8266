@@ -10,7 +10,7 @@ void setOutputs() {
 }
 
 void autonomousIOHandler () {
-  #ifdef AUT_IO
-    //place code here that handles autonomous I/O functions 
-  #endif
+#ifdef AUT_IO
+  //place code here that handles autonomous I/O functions
+#endif
 }

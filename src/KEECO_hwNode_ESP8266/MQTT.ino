@@ -1,47 +1,45 @@
-WiFiClient wifiClient;
-MqttClient mqttClient(wifiClient);
+PubSubClient client(wifiClient);
+#define MQTT_CONN_RETRY_WAIT 5000
 
 
-bool connectToMqttBroker() {
-    if (!mqttClient.connect(broker, 1883)) {
-      #ifdef DEBUG
-        Serial.print("MQTT connection failed! Error code = ");
-        Serial.println(mqttClient.connectError());
-      #endif
-      return false;
-    }
-    else {
-      #ifdef DEBUG
-        Serial.print("Connected to MQTT broker");
-      #endif
-    }
-      return true;
+long mqttLastConnAttempt = 0;
+char *mqttSubTopic = "SubscribedTopic";
+char *mqttPubTopic = "PublishTopic";
+
+void mqttConectionSetup() {
+  client.setServer(mqttServer, 1883);
+  client.setCallback(mqttSubCallback);
 }
 
-void initializeMqttSession() {
-  mqttClient.onMessage(onMqttMessage);     // set the message receive callback
-  mqttClient.subscribe(topic);             // subscribe to a topic
+void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
+  // handle message arrived
+}
+
+boolean mqttReconnect() {
+  if (client.connect(deviceUUID, contentOfInfoTxt, NULL)) {
+    client.publish(mqttPubTopic, "ONLINE");
+    client.subscribe(mqttSubTopic);
+#ifdef DBEUG
+    Serial.println("Connected to MQTT Server");
+#endif
+  }
+  return client.connected();
 }
 
 void mqttInLoop() {
-    mqttClient.poll();  
-}
-
-
-void onMqttMessage(int messageSize) {     //MQTT receive callback
-  Serial.println("Received a message with topic '");
-  Serial.print(mqttClient.messageTopic());
-  Serial.print("', length ");
-  Serial.print(messageSize);
-  Serial.println(" bytes:");
-
-  while (mqttClient.available()) {        // use the Stream interface to print the contents
-    Serial.print((char)mqttClient.read());
+  if (!client.connected()) {
+#ifdef DEBUG
+    Serial.println("Still no connection to MQTT Server");
+#endif
+    long now = millis();
+    if (now - mqttLastConnAttempt > MQTT_CONN_RETRY_WAIT) {
+      mqttLastConnAttempt = now;
+      if (mqttReconnect()) {
+        mqttLastConnAttempt = 0;
+      }
+    }
   }
-}
-
-void mqttSendMessage() {
-    mqttClient.beginMessage(topic);
-    mqttClient.print("hello ");
-    mqttClient.endMessage();
+  else {
+    client.loop();
+  }
 }
