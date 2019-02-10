@@ -9,8 +9,14 @@ The configuration is possible until the CONFIG_NOT_AVAIL message.
 The hardware end node appears as a SoftAP where WiFi credentials can be set. SSID format: KEECO_AP_*ChipID*
 
 Hardware Node information can be requested via HTTP:
+
 /info - schema file descriptor for hardware end node characteristics
+
 /uuid - UUID that identifies the hardware end node
-/wifi - wifi settings
+
+/edit - Browser based file manager
+
+All of the above + WiFi settings can be reached from the root page.
+
 
 Requested includes are identified in the code with URLs
