@@ -2,10 +2,10 @@
 //ioValues[48]; Assign 3 bytes per I/O item, max 16 I/O items per node. 1st byte = local ID, 2nd-3rd byte = 16 bit I/O value
 
 void handleIO() {
-  //place code here that handles IO
+  //client.publish(char* topic, byte* payload, unsigned int length);
 }
 
-void setOutputs() {
+void setOutputs(char* topic, byte* payload, unsigned int length) {
   //place code here that updates outputs
 }
 

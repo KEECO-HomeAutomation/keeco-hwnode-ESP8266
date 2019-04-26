@@ -3,8 +3,13 @@ PubSubClient client(wifiClient);
 
 
 long mqttLastConnAttempt = 0;
-char *mqttSubTopic = "SubscribedTopic";
-char *mqttPubTopic = "PublishTopic";
+
+char *mqttSubTopic[] = {
+  "SubTopic1",
+  "SubTopic2"
+};
+
+int mqttSubTopicCount = 2;
 
 void mqttConectionSetup() {
   client.setServer(mqttServer, 1883);
@@ -12,14 +17,26 @@ void mqttConectionSetup() {
 }
 
 void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
-  // handle message arrived
+#ifdef DEBUG
+  Serial.print("Received topic:");
+  Serial.println(topic);
+  Serial.print("Received Payload: ");
+  for (int i = 0; i < length; i++) {
+    Serial.print(payload[i]);
+  }
+#endif
+  setOutputs(topic, payload, length);
 }
 
 boolean mqttReconnect() {
-  if (client.connect(deviceUUID, contentOfInfoTxt, NULL)) {
-    client.publish(mqttPubTopic, "ONLINE");
-    client.subscribe(mqttSubTopic);
-#ifdef DBEUG
+  //if (client.connect(AP_SSID, contentOfInfoTxt, NULL)) {
+    if (client.connect(AP_SSID, "development", "development")) {
+    for (int i = 0; i < mqttSubTopicCount ; i++ ) {
+      Serial.println(mqttSubTopic[i]);
+      client.subscribe(mqttSubTopic[i]);
+    }
+
+#ifdef DEBUG
     Serial.println("Connected to MQTT Server");
 #endif
   }
@@ -28,18 +45,21 @@ boolean mqttReconnect() {
 
 void mqttInLoop() {
   if (!client.connected()) {
-#ifdef DEBUG
-    Serial.println("Still no connection to MQTT Server");
-#endif
     long now = millis();
     if (now - mqttLastConnAttempt > MQTT_CONN_RETRY_WAIT) {
       mqttLastConnAttempt = now;
       if (mqttReconnect()) {
         mqttLastConnAttempt = 0;
       }
+      else {
+#ifdef DEBUG
+        Serial.println("Still no connection to MQTT Server");
+        Serial.println(client.state());
+#endif
+      }
     }
   }
-  else {
-    client.loop();
-  }
+  //  else {
+  client.loop();
+  //  }
 }

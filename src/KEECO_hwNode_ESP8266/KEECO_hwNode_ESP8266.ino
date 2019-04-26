@@ -1,5 +1,4 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266WiFiMulti.h>
 #include <EEPROM.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
@@ -14,7 +13,6 @@
 #define OTA       //not yet implemented
 #define AUT_IO    //to enable autonomous functions
 
-ESP8266WiFiMulti WiFiMulti;
 WiFiClient wifiClient;
 
 ESP8266WebServer webserver(80);
@@ -37,7 +35,8 @@ char hostString[17] = {0};
 char contentOfInfoTxt[1024];
 
 //MQTT globals
-IPAddress mqttServer(172, 16, 0, 2);
+IPAddress mqttServer(192, 168, 1, 20);
+//char *mqttServer = "keeco-hub.local";
 
 //#DeviceUUID - identifies the device at the server application
 char deviceUUID[37];
@@ -69,22 +68,24 @@ void setup() {
 
   //loading WiFi credentials from EEPROM
   loadWifiCredentials();
-  WiFiMulti.addAP(WiFi_SSID, WiFi_Password);
   WiFi.onEvent(WiFiEvent);
+  WiFi.begin(WiFi_SSID, WiFi_Password);
+  //WiFiMulti.addAP(WiFi_SSID, WiFi_Password);
 
   //provides interface to configure WiFi credentials at startup - "SSID,Password" format
   checkIfConfigModeReq(10000, true);
 
-  //start SoftAP and Webserver to enable WiFi configuration via browser
-  startSoftAP();
+  //Webserver to enable WiFi configuration via browser
   startWebserver();
+
+  //Setup MQTT server information
+  mqttConectionSetup();
 }
 
 void loop() {
-  //delay(1000);
   webserverInLoop();
   mqttInLoop();
+  mdnsInLoop();
   timer.tick();
   handleIO();
-  //Serial.println("Running...");
 }

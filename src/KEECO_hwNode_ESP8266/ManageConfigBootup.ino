@@ -37,7 +37,7 @@ void checkIfConfigModeReq(unsigned int startupTimeOut, bool reset) {  //returns 
 
 
   startupTimeStamp = millis();
-  while ((WiFiMulti.run() != WL_CONNECTED) && (millis() < startupTimeStamp + startupTimeOut)) {
+  while ((WiFi.status() != WL_CONNECTED) && (millis() < startupTimeStamp + startupTimeOut)) {
 #ifdef DEBUG
     Serial.println("CONF_AVAIL");
 #endif
