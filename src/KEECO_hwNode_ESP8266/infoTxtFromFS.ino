@@ -12,7 +12,7 @@ void readInfoFileFromFS() {
     Serial.println("Info TXT has been successfully opened");
 #endif
     tempContent = infoFile.readString();
-    tempContent.replace("UUID_PLACEHOLDER", deviceUUID);
+    tempContent.replace("UUID_PLACEHOLDER", deviceUUID);        //to replace placeholder with actual UUID
     tempContentLength = tempContent.length();
     tempContent.toCharArray(contentOfInfoTxt, 1024);
     Serial.println("InfoTXT length");

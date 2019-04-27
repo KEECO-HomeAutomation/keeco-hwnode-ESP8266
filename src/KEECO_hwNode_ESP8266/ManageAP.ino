@@ -1,15 +1,48 @@
-void startSoftAP() {
-  WiFi.mode(WIFI_AP_STA);
+void wifiInitOnBoot() {
+  int wifiConnWait = 0;
+
+  WiFi.mode(WIFI_STA);
+  WiFi.onEvent(WiFiEvent);
+  WiFi.setAutoReconnect(true);
+  WiFi.hostname("KKECO_HW_Node");
+  WiFi.begin(WiFi_SSID, WiFi_Password);
+#ifdef DEBUG
+  Serial.println("Connecting to WiFi...");
+#endif
+  while ((WiFi.status() != WL_CONNECTED) & (wifiConnWait < 60)) {
+    delay(250);
+    wifiConnWait++;
+#ifdef DEBUG
+    Serial.print(".");
+#endif
+  }
+  if (wifiConnWait < 60) {
+#ifdef DEBUG
+    Serial.println("");
+    Serial.print("Connected to Wifi");
+    Serial.println(WiFi_SSID);
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+#endif
+  }
+  start_mDNS();
+  //startAPServices();
+}
+
+
+void startAPServices() {
   WiFi.softAPConfig(apIP, apIP, netMsk);
   sprintf(AP_SSID, "KEECO_AP_%06X", ESP.getChipId());
   WiFi.softAP(AP_SSID, AP_Password);
 #ifdef DEBUG
   Serial.println("Soft AP Running...");
 #endif
+  MDNS.notifyAPChange();
 }
 
 void stopAPServices() {
-  WiFi.mode(WIFI_STA);
+  WiFi.softAPdisconnect(true);
+  MDNS.notifyAPChange();
 }
 
 /** Is this an IP? */

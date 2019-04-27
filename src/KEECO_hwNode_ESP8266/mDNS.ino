@@ -1,26 +1,22 @@
 void start_mDNS() {
   sprintf(hostString, "KEECO_%06X", ESP.getChipId());
-  //if (!MDNS.begin(hostString)) {
   if (!MDNS.begin(hostString)) {
+
 #ifdef DEBUG
     Serial.println("ERROR: mDNS Responder could not start!");
 #endif
   }
   else  {
 #ifdef DEBUG
-    Serial.println("mDNS Running, Hoststring with ChipID");
+    Serial.print("mDNS Running, Hoststring with ChipID: ");
     Serial.println(hostString);
 #endif
   }
 }
 
-void mdnsInLoop() {
-  MDNS.update();
-}
-
-void mdnsQuery() {
-  Serial.println("Sending mDNS query");
-  int n = MDNS.queryService("http", "tcp"); // Send out query for mqtt tcp services
+void query_mDNS() {
+  int n = MDNS.queryService("mqtt", "tcp"); // Send out query for mqtt tcp services
+#ifdef DEBUG
   Serial.println("mDNS query done");
   if (n == 0) {
     Serial.println("no services found");
@@ -39,4 +35,16 @@ void mdnsQuery() {
       Serial.println(")");
     }
   }
+#endif
+if (n == 0) {
+  
+}
+else {
+  mqttServerIP = MDNS.IP(0);
+  mqttServerPort = MDNS.port(0);
+  }
+}
+
+void mdnsInLoop() {
+  MDNS.update();
 }

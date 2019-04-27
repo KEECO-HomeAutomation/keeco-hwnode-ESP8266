@@ -1,7 +1,6 @@
 PubSubClient client(wifiClient);
 #define MQTT_CONN_RETRY_WAIT 5000
 
-
 long mqttLastConnAttempt = 0;
 
 char *mqttSubTopic[] = {
@@ -12,6 +11,7 @@ char *mqttSubTopic[] = {
 int mqttSubTopicCount = 2;
 
 void mqttConectionSetup() {
+  query_mDNS();
   client.setServer(mqttServer, 1883);
   client.setCallback(mqttSubCallback);
 }
@@ -29,13 +29,12 @@ void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
 }
 
 boolean mqttReconnect() {
-  //if (client.connect(AP_SSID, contentOfInfoTxt, NULL)) {
-    if (client.connect(AP_SSID, "development", "development")) {
+  if (client.connect(AP_SSID, contentOfInfoTxt, "password")) {
+    //if (client.connect(AP_SSID, "development", "development")) {
     for (int i = 0; i < mqttSubTopicCount ; i++ ) {
       Serial.println(mqttSubTopic[i]);
       client.subscribe(mqttSubTopic[i]);
     }
-
 #ifdef DEBUG
     Serial.println("Connected to MQTT Server");
 #endif
@@ -49,7 +48,8 @@ void mqttInLoop() {
     if (now - mqttLastConnAttempt > MQTT_CONN_RETRY_WAIT) {
       mqttLastConnAttempt = now;
       if (mqttReconnect()) {
-        mqttLastConnAttempt = 0;
+        Serial.println("mqttReconnect tortent");
+        //mqttLastConnAttempt = 0;
       }
       else {
 #ifdef DEBUG

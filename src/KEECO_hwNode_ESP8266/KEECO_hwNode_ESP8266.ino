@@ -35,8 +35,10 @@ char hostString[17] = {0};
 char contentOfInfoTxt[1024];
 
 //MQTT globals
-IPAddress mqttServer(192, 168, 1, 20);
-//char *mqttServer = "keeco-hub.local";
+//IPAddress mqttServerIP(192, 168, 1, 20);
+IPAddress mqttServerIP;
+uint16_t mqttServerPort;
+char *mqttServer = "keeco-hub.local";
 
 //#DeviceUUID - identifies the device at the server application
 char deviceUUID[37];
@@ -51,35 +53,24 @@ auto timer = timer_create_default();
 Dir dir;
 
 void setup() {
-  //Init Serial port
   Serial.setTimeout(1000);
   Serial.begin(115200);
   while (!Serial);
   Serial.println("Starting up KEECO HW Node...");
 
-  //Filesystem is used to send HW Node Info over HTTP
-  SPIFFS.begin();
+  SPIFFS.begin();                               //Filesystem is used to store online file manager and MQTT Username
   initDirStructureOnFS();
-  //Loads UUID from EEPROM
-  loadDeviceUUID();
+  loadDeviceUUID();                             //Loads UUID from EEPROM
+  readInfoFileFromFS();                         //loading data from the infoFile on th FS
 
-  //loading data from the infoFile on th FS
-  readInfoFileFromFS();
+  checkIfConfigModeReq(2000, true);            //provides interface to configure WiFi credentials at startup - "SSID,Password" format over Serial Port
 
-  //loading WiFi credentials from EEPROM
-  loadWifiCredentials();
-  WiFi.onEvent(WiFiEvent);
-  WiFi.begin(WiFi_SSID, WiFi_Password);
-  //WiFiMulti.addAP(WiFi_SSID, WiFi_Password);
-
-  //provides interface to configure WiFi credentials at startup - "SSID,Password" format
-  checkIfConfigModeReq(10000, true);
-
-  //Webserver to enable WiFi configuration via browser
-  startWebserver();
-
-  //Setup MQTT server information
-  mqttConectionSetup();
+  loadWifiCredentials();                        //loading WiFi credentials from EEPROM
+  wifiInitOnBoot();                             
+ 
+  startWebserver();                             //Webserver to enable WiFi configuration via browser
+ 
+  mqttConectionSetup();                         //Setup MQTT server information
 }
 
 void loop() {
