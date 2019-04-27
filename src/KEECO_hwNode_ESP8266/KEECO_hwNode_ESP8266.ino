@@ -45,6 +45,7 @@ char deviceUUID[37];
 
 //Status of WiFi connection
 bool wifiIsConnected = false;
+bool softAPRunning = false;
 
 //timer for various tasks - for future scalability
 auto timer = timer_create_default();

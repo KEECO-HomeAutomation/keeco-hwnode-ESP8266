@@ -24,9 +24,12 @@ void wifiInitOnBoot() {
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 #endif
+    wifiIsConnected = true;
   }
-  start_mDNS();
-  //startAPServices();
+  else {
+      startAPServices();
+  }
+    start_mDNS();
 }
 
 
@@ -38,11 +41,13 @@ void startAPServices() {
   Serial.println("Soft AP Running...");
 #endif
   MDNS.notifyAPChange();
+  softAPRunning = true;
 }
 
 void stopAPServices() {
   WiFi.softAPdisconnect(true);
   MDNS.notifyAPChange();
+  softAPRunning = false;
 }
 
 /** Is this an IP? */

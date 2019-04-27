@@ -9,9 +9,17 @@ void WiFiEvent(WiFiEvent_t event) {
       Serial.print("IP address: ");
       Serial.println(WiFi.localIP());
 #endif
+      if (softAPRunning) {
+        stopAPServices();
+      }
       wifiIsConnected = true;
       break;
     case WIFI_EVENT_STAMODE_DISCONNECTED:
+      if (wifiIsConnected) {
+        if (!(softAPRunning)) {
+          startAPServices();
+        }
+      }
       wifiIsConnected = false;
 #ifdef DEBUG
       Serial.println("WiFi lost connection");
