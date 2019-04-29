@@ -72,6 +72,8 @@ void setup() {
   startWebserver();                             //Webserver to enable WiFi configuration via browser
  
   mqttConectionSetup();                         //Setup MQTT server information
+  initIO();
+  timer.every(5000, publishIO);
 }
 
 void loop() {
@@ -79,5 +81,5 @@ void loop() {
   mqttInLoop();
   mdnsInLoop();
   timer.tick();
-  handleIO();
+  readIO();
 }

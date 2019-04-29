@@ -1,12 +1,31 @@
 //Place code here that handles I/O
-//ioValues[48]; Assign 3 bytes per I/O item, max 16 I/O items per node. 1st byte = local ID, 2nd-3rd byte = 16 bit I/O value
+//initIO() - place code here that initializes the I/Os
+//publishIO() - place code here to publish values over MQTT / client.publish(char* topic, byte* payload, unsigned int length);
+//setOutputs() - this is the callback function for the MQTT subscription. Subscriptions are defined in the MQTT file
+//autonomousIOHandler() / for future reference for autonomous functions
 
-void handleIO() {
-  //client.publish(char* topic, byte* payload, unsigned int length);
+//includes
+
+
+//global Variables
+
+
+//generated Code
+void initIO() {
+
+}
+
+void readIO() {
+  
+}
+
+bool publishIO(void *) {
+
+  return true;
 }
 
 void setOutputs(char* topic, byte* payload, unsigned int length) {
-  //place code here that updates outputs
+
 }
 
 void autonomousIOHandler () {
