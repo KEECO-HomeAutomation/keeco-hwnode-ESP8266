@@ -6,7 +6,9 @@
 #include <timer.h>             //https://github.com/contrem/arduino-timer
 #include <FS.h>
 #include <ESP8266TrueRandom.h> //https://github.com/marvinroger/ESP8266TrueRandom, for the UUID generation
-#include <PubSubClient.h>      //https://pubsubclient.knolleary.net/api.html 
+#include <PubSubClient.h>      //https://pubsubclient.knolleary.net/api.html
+#include <ArduinoOTA.h>
+#include <WiFiUdp.h>
 
 
 #define DEBUG     //to enable debug purpose serial output 
@@ -67,13 +69,31 @@ void setup() {
   checkIfConfigModeReq(2000, true);            //provides interface to configure WiFi credentials at startup - "SSID,Password" format over Serial Port
 
   loadWifiCredentials();                        //loading WiFi credentials from EEPROM
-  wifiInitOnBoot();                             
- 
+  wifiInitOnBoot();
+
   startWebserver();                             //Webserver to enable WiFi configuration via browser
- 
+
   mqttConectionSetup();                         //Setup MQTT server information
   initIO();
   timer.every(5000, publishIO);
+#ifdef OTA
+  ArduinoOTA.setHostname(hostString);
+  ArduinoOTA.onStart([]() { 
+    Serial.println("Arduino OTA Started");
+  });
+
+  ArduinoOTA.onEnd([]() { 
+    Serial.println("Arduino OTA Ended");
+  });
+
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.println("Arduino OTA Error..restarting...");
+    (void)error;
+    ESP.restart();
+  });
+  ArduinoOTA.begin();
+  Serial.println("OTA Available");
+#endif
 }
 
 void loop() {
@@ -82,4 +102,7 @@ void loop() {
   mdnsInLoop();
   timer.tick();
   readIO();
+#ifdef OTA
+  ArduinoOTA.handle();
+#endif
 }
