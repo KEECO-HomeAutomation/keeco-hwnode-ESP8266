@@ -37,9 +37,6 @@ char hostString[17] = {0};
 char contentOfInfoTxt[1024];
 
 //MQTT globals
-//IPAddress mqttServerIP(192, 168, 1, 20);
-IPAddress mqttServerIP;
-uint16_t mqttServerPort;
 char *mqttServer = "keeco-hub.local";
 
 //#DeviceUUID - identifies the device at the server application
@@ -56,53 +53,34 @@ auto timer = timer_create_default();
 Dir dir;
 
 void setup() {
-  Serial.setTimeout(1000);
-  Serial.begin(115200);
-  while (!Serial);
-  Serial.println("Starting up KEECO HW Node...");
+    Serial.setTimeout(1000);
+    Serial.begin(115200);
+    while (!Serial);
+    Serial.println("Starting up KEECO HW Node...");
 
-  SPIFFS.begin();                               //Filesystem is used to store online file manager and MQTT Username
-  initDirStructureOnFS();
-  loadDeviceUUID();                             //Loads UUID from EEPROM
-  readInfoFileFromFS();                         //loading data from the infoFile on th FS
+    SPIFFS.begin();                               //Filesystem is used to store online file manager and MQTT Username
+    initDirStructureOnFS();
+    loadDeviceUUID();                             //Loads UUID from EEPROM
+    readInfoFileFromFS();                         //loading data from the infoFile on th FS
 
-  checkIfConfigModeReq(2000, true);            //provides interface to configure WiFi credentials at startup - "SSID,Password" format over Serial Port
+    checkIfConfigModeReq(2000, true);            //provides interface to configure WiFi credentials at startup - "SSID,Password" format over Serial Port
 
-  loadWifiCredentials();                        //loading WiFi credentials from EEPROM
-  wifiInitOnBoot();
+    loadWifiCredentials();                        //loading WiFi credentials from EEPROM
+    wifiInitOnBoot();
 
-  startWebserver();                             //Webserver to enable WiFi configuration via browser
+    startWebserver();                             //Webserver to enable WiFi configuration via browser
 
-  mqttConectionSetup();                         //Setup MQTT server information
-  initIO();
-  timer.every(5000, publishIO);
-#ifdef OTA
-  ArduinoOTA.setHostname(hostString);
-  ArduinoOTA.onStart([]() { 
-    Serial.println("Arduino OTA Started");
-  });
-
-  ArduinoOTA.onEnd([]() { 
-    Serial.println("Arduino OTA Ended");
-  });
-
-  ArduinoOTA.onError([](ota_error_t error) {
-    Serial.println("Arduino OTA Error..restarting...");
-    (void)error;
-    ESP.restart();
-  });
-  ArduinoOTA.begin();
-  Serial.println("OTA Available");
-#endif
+    mqttConectionSetup();                         //Setup MQTT server information
+    initIO();
+    timer.every(5000, publishIO);
+    OTA_Setup();
 }
 
 void loop() {
-  webserverInLoop();
-  mqttInLoop();
-  mdnsInLoop();
-  timer.tick();
-  readIO();
-#ifdef OTA
-  ArduinoOTA.handle();
-#endif
+    timer.tick();
+    webserverInLoop();
+    mqttInLoop();
+    mdnsInLoop();
+    readIO();
+    OTA_inLoop();
 }
