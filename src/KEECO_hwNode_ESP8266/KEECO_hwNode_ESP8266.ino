@@ -32,6 +32,7 @@ char *AP_Password = "12345678";
 
 //for the mDNS identification, name of the Hardware Node. Populated in the start_mDNS() function
 char hostString[17] = {0};
+bool mdnsRunning;
 
 //String that contains the data from the infoTXT file on the FS
 char contentOfInfoTxt[1024];

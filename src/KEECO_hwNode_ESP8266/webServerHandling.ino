@@ -5,6 +5,7 @@ void startWebserver() {
     webserver.on("/wifisave", handleWifiSave);
     webserver.on("/info", handleNodeInfo);
     webserver.on("/uuid", handleUuidRequest);
+    webserver.on("/mdns", mdnsQueryHandler);
 
     //FS Browser related pages
     webserver.on("/list", HTTP_GET, handleFileList);                                         //list directory

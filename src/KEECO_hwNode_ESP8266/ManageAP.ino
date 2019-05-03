@@ -36,13 +36,17 @@ void startAPServices() {
 #ifdef DEBUG
     Serial.println("Soft AP Running...");
 #endif
-    MDNS.notifyAPChange();
+    if (mdnsRunning) {
+        MDNS.notifyAPChange();
+    }
     softAPRunning = true;
 }
 
 void stopAPServices() {
     WiFi.softAPdisconnect(true);
-    MDNS.notifyAPChange();
+    if (mdnsRunning) {
+        MDNS.notifyAPChange();
+    }
     softAPRunning = false;
 #ifdef DEBUG
     Serial.println("Soft AP is Stopped");

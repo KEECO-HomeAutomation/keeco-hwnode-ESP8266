@@ -1,12 +1,13 @@
 void start_mDNS() {
     sprintf(hostString, "KEECO_%06X", ESP.getChipId());
     if (!MDNS.begin(hostString)) {
-
+        mdnsRunning = false;
 #ifdef DEBUG
         Serial.println("ERROR: mDNS Responder could not start!");
 #endif
     }
     else  {
+      mdnsRunning = true;
 #ifdef DEBUG
         Serial.print("mDNS Running, Hoststring with ChipID: ");
         Serial.println(hostString);

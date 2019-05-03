@@ -55,6 +55,7 @@ void handleRoot() {
         "<br /><a href='/info'>Display Node Info File</a>"
         "<br /><a href='/uuid'>Display Node UUID</a>"
         "<br /><a href='/edit'>Display Node File Manager</a>"
+        "<br /><a href='/mdns'>Display results of an mDNS Query</a>"
         "</body></html>"
     );
     webserver.client().stop(); // Stop is needed because we sent no content length
@@ -94,5 +95,32 @@ void handleUuidRequest() {
     webserver.setContentLength(CONTENT_LENGTH_UNKNOWN);
     webserver.send(200, "text/html", ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
     webserver.sendContent(deviceUUID);
+    webserver.client().stop(); // Stop is needed because we sent no content length
+}
+
+void mdnsQueryHandler() {
+    webserver.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    webserver.sendHeader("Pragma", "no-cache");
+    webserver.sendHeader("Expires", "-1");
+    webserver.setContentLength(CONTENT_LENGTH_UNKNOWN);
+    webserver.send(200, "text/html", ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
+    webserver.sendContent(
+        "<html><head></head><body>"
+        "<h1>MQTT mDNS Query</h1>"
+    );
+    if (mdnsRunning) {
+        int n = MDNS.queryService("mqtt", "tcp");
+        if (n > 0) {
+            for (int i = 0; i < n; i++) {
+                webserver.sendContent(String() + "\r\n<tr><td>" + MDNS.hostname(i) + " @ " + toStringIp(MDNS.IP(i)) + ":" + String(MDNS.port(i)) + "</td></tr>");
+            }
+        } else {
+            webserver.sendContent(String() + "<tr><td>No MQTT Service Provider was found</td></tr>");
+        }
+    }
+    else {
+        webserver.sendContent(String() + "<tr><td>Error: mDNS Service could not start on this node</td></tr>");
+    }
+    webserver.sendContent("</body></html>");
     webserver.client().stop(); // Stop is needed because we sent no content length
 }
