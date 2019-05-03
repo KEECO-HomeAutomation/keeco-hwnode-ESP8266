@@ -4,8 +4,8 @@ PubSubClient client(wifiClient);
 long mqttLastConnAttempt = 0;
 
 char *mqttSubTopic[] = {
-    "SubTopic1",
-    "SubTopic2"
+    "nodes/88e1cc4a-a471-4512-85f4-3d4f7c834fed/SubTopic1",
+    "nodes/88e1cc4a-a471-4512-85f4-3d4f7c834fed/SubTopic2"
 };
 
 int mqttSubTopicCount = 2;
@@ -30,7 +30,6 @@ void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
 
 boolean mqttReconnect() {
     if (client.connect(AP_SSID, contentOfInfoTxt, "password")) {
-        //if (client.connect(AP_SSID, "development", "development")) {
         for (int i = 0; i < mqttSubTopicCount ; i++ ) {
             Serial.println(mqttSubTopic[i]);
             client.subscribe(mqttSubTopic[i]);

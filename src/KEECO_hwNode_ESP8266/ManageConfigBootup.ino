@@ -22,7 +22,7 @@ void loadDeviceUUID() {
 #endif
     }
     String uuidStr = ESP8266TrueRandom.uuidToString(uuidNumber);
-    uuidStr.toCharArray(deviceUUID, 36);
+    uuidStr.toCharArray(deviceUUID, 37);
 #ifdef DEBUG
     Serial.print("UUID loaded from EEPROM: ");
     Serial.println(uuidStr);
@@ -35,7 +35,7 @@ void checkIfConfigModeReq(unsigned int startupTimeOut, bool reset) {  //returns 
     char terminationChar = '\r';
     unsigned int startupTimeStamp;
 
-
+    digitalWrite(LED_BUILTIN, 0);
     startupTimeStamp = millis();
     Serial.println("CONF_AVAIL");
     while ((WiFi.status() != WL_CONNECTED) && (millis() < startupTimeStamp + startupTimeOut)) {
@@ -85,5 +85,6 @@ void checkIfConfigModeReq(unsigned int startupTimeOut, bool reset) {  //returns 
     }
     else {
     }
+    digitalWrite(LED_BUILTIN, 1);
     Serial.println("CONF_NOT_AVAIL");
 }

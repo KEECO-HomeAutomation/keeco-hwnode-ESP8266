@@ -54,6 +54,7 @@ auto timer = timer_create_default();
 Dir dir;
 
 void setup() {
+    pinMode(LED_BUILTIN, OUTPUT);
     Serial.setTimeout(1000);
     Serial.begin(115200);
     while (!Serial);
