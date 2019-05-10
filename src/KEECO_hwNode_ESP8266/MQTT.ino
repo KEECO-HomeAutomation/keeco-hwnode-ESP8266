@@ -4,6 +4,7 @@ PubSubClient client(wifiClient);
 long mqttLastConnAttempt = 0;
 
 char *mqttSubTopic[] = {
+//@mqttSubTopics@
     "nodes/88e1cc4a-a471-4512-85f4-3d4f7c834fed/SubTopic1",
     "nodes/88e1cc4a-a471-4512-85f4-3d4f7c834fed/SubTopic2"
 };

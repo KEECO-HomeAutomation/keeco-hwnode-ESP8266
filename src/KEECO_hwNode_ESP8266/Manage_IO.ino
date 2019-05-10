@@ -6,21 +6,22 @@ autonomousIOHandler() / for future reference for autonomous functions
 ------------------------------------------------------------Do not modify comments or function names below this line!---------------------------------------------------------------------------*/
 
 //includes
-
+//@includes@
 
 //global Variables
-
+//@globalvars@
 
 //generated Code
 void initIO() {
-
+//@initIOcode@
 }
 
 void readIO() {
-
+//@readIOcode@
 }
 
 bool publishIO(void *) {
+//@publishIOcode@
     digitalWrite(LED_BUILTIN, 0);
     delay(20);
     digitalWrite(LED_BUILTIN, 1);
@@ -28,7 +29,7 @@ bool publishIO(void *) {
 }
 
 void setOutputs(char* topic, byte* payload, unsigned int length) {
-
+//@setOutputscode@
 }
 
 void autonomousIOHandler () {
