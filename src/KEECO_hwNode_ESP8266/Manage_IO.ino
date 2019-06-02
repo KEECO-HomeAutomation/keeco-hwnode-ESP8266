@@ -9,6 +9,8 @@ autonomousIOHandler() / for future reference for autonomous functions
 //@includes@
 
 //global Variables
+char tempstr[128];  //for conversion to publish
+int tempint;        //for vonversion from subscribe
 //@globalvars@
 
 //generated Code

@@ -30,8 +30,13 @@ void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
 }
 
 boolean mqttReconnect() {
+  String temp_topic;
+  
     if (client.connect(AP_SSID, contentOfInfoTxt, "password")) {
         for (int i = 0; i < mqttSubTopicCount ; i++ ) {
+          temp_topic = str(mqttSubTopic[i]);
+          temp_topic.replace("UUID_PLACEHOLDER", deviceUUID); 
+          temp_topic.toCharArray(mqttSubTopic[i], 1024);
             Serial.println(mqttSubTopic[i]);
             client.subscribe(mqttSubTopic[i]);
         }
