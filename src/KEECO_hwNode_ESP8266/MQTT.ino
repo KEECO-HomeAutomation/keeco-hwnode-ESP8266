@@ -5,11 +5,9 @@ long mqttLastConnAttempt = 0;
 
 char *mqttSubTopic[] = {
 //@mqttSubTopics@
-    "nodes/88e1cc4a-a471-4512-85f4-3d4f7c834fed/SubTopic1",
-    "nodes/88e1cc4a-a471-4512-85f4-3d4f7c834fed/SubTopic2"
 };
 
-int mqttSubTopicCount = 2;
+int mqttSubTopicCount = 0;		//Do not modify this when using the build tool! This line is replaced in the automatic code generator tool!
 
 void mqttConectionSetup() {
     query_mDNS();
@@ -34,7 +32,7 @@ boolean mqttReconnect() {
   
     if (client.connect(AP_SSID, contentOfInfoTxt, "password")) {
         for (int i = 0; i < mqttSubTopicCount ; i++ ) {
-          temp_topic = str(mqttSubTopic[i]);
+          temp_topic = String(mqttSubTopic[i]);
           temp_topic.replace("UUID_PLACEHOLDER", deviceUUID); 
           temp_topic.toCharArray(mqttSubTopic[i], 1024);
             Serial.println(mqttSubTopic[i]);
