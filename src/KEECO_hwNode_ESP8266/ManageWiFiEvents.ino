@@ -9,25 +9,21 @@ void WiFiEvent(WiFiEvent_t event) {
             Serial.print("IP address: ");
             Serial.println(WiFi.localIP());
 #endif
-            if (softAPRunning) {
+            if (espConfig.statuses.softApRunning) {
                 stopAPServices();
             }
-            wifiIsConnected = true;
+            espConfig.statuses.wifiIsConnected = true;
             break;
         case WIFI_EVENT_STAMODE_DISCONNECTED:
-            if (wifiIsConnected) {
-                if (!(softAPRunning)) {
+            if (espConfig.statuses.wifiIsConnected) {
+                if (!(espConfig.statuses.softApRunning)) {
                     startAPServices();
+                    Serial.println("AP Services Started");
                 }
             }
-            wifiIsConnected = false;
+            espConfig.statuses.wifiIsConnected = false;
 #ifdef DEBUG
             Serial.println("WiFi lost connection");
-#endif
-            break;
-        case WIFI_EVENT_SOFTAPMODE_PROBEREQRECVED:
-#ifdef DEBUG
-            Serial.println("ESP8266 was scanned by an other device and it replied");
 #endif
             break;
     }

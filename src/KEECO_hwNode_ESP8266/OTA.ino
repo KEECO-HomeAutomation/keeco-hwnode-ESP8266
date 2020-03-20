@@ -1,6 +1,6 @@
-void OTA_Setup() {
+void InitOTA() {
 #ifdef OTA
-    ArduinoOTA.setHostname(hostString);
+    ArduinoOTA.setHostname(espConfig.hostString);
     ArduinoOTA.onStart([]() {
         Serial.println("Arduino OTA InProgress...");
     });
@@ -19,7 +19,7 @@ void OTA_Setup() {
 #endif
 }
 
-void OTA_inLoop() {
+void OTAInLoop() {
 #ifdef OTA
     ArduinoOTA.handle();
 #endif

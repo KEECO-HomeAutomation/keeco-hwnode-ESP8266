@@ -1,6 +1,17 @@
+/*
+ * KEECO HW Node application software
+ * Version 3.2
+ * Developed by https://github.com/litechniks
+ * 
+ * Only Manage_IO needs to be modified to implement your application
+ * The usecase in this code is a gate lock functionality with and RFID reader that is operated over MQTT
+ * 
+ * 
+ */
+
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
-#include <WiFiClient.h>
+#include <WiFiClientSecure.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <timer.h>             //https://github.com/contrem/arduino-timer
@@ -9,80 +20,68 @@
 #include <PubSubClient.h>      //https://pubsubclient.knolleary.net/api.html
 #include <ArduinoOTA.h>
 #include <WiFiUdp.h>
+#include <ArduinoJson.h>
+#include "configFileHandler.h"
 
 
 #define DEBUG     //to enable debug purpose serial output 
 #define OTA       //not yet implemented
-#define AUT_IO    //to enable autonomous functions
-
-WiFiClient wifiClient;
 
 ESP8266WebServer webserver(80);
+
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);
 
-
-//Wifi Credentials - 32 and 64 lengths are defined by standard. Values are loaded from EEPROM
-char WiFi_SSID[33] = "";
-char WiFi_Password[65] = "";
-
-//Soft AP Credentials
-char AP_SSID[33] = {0};
-char *AP_Password = "12345678";
-
-//for the mDNS identification, name of the Hardware Node. Populated in the start_mDNS() function
-char hostString[17] = {0};
-bool mdnsRunning;
-
-//String that contains the data from the infoTXT file on the FS
-char contentOfInfoTxt[1024];
-
-//MQTT globals
-char *mqttServer = "keeco-hub.local";
-
-//#DeviceUUID - identifies the device at the server application
-char deviceUUID[37];
-
-//Status of WiFi connection
-bool wifiIsConnected = false;
-bool softAPRunning = false;
+ConfigurationHandler espConfig;
 
 //timer for various tasks - for future scalability
 auto timer = timer_create_default();
 
-//for Browser based file manager
-Dir dir;
 
+/*
+  Initializing the KEECO HW Node
+  Serial Timeout is needed for the serial command terminal
+  SPIFFS - is used to store the configuration data - SSID, Password, mqtt_server, UUID
+  espConfig - global object storing the configuration variables
+  initWifiOnBoot - try to connect to Infrastructure WiFi (60 sec timeout). If not successful start AP mode. Later if disconnected from STA then AP reactivates. Also starts mDNS.
+  initWebserver - webserver to set configuration parameters
+  initMqtt - connect to the set mqtt server. Name is resolved with mDNS. Set subscriptions.
+  initIO - place your custom init code in this function
+  InitOTA - initializing OTA
+  timer - setup a timer that calls publishIO() - place your periodically called code there
+
+*/
 void setup() {
-    pinMode(LED_BUILTIN, OUTPUT);
-    Serial.setTimeout(1000);
-    Serial.begin(115200);
-    while (!Serial);
-    Serial.println("Starting up KEECO HW Node...");
-
-    SPIFFS.begin();                               //Filesystem is used to store online file manager and MQTT Username
-    initDirStructureOnFS();
-    loadDeviceUUID();                             //Loads UUID from EEPROM
-    readInfoFileFromFS();                         //loading data from the infoFile on th FS
-
-    checkIfConfigModeReq(2000, true);            //provides interface to configure WiFi credentials at startup - "SSID,Password" format over Serial Port
-
-    loadWifiCredentials();                        //loading WiFi credentials from EEPROM
-    wifiInitOnBoot();
-
-    startWebserver();                             //Webserver to enable WiFi configuration via browser
-
-    mqttConectionSetup();                         //Setup MQTT server information
-    initIO();
-    timer.every(5000, publishIO);
-    OTA_Setup();
+  Serial.setTimeout(10);
+  Serial.begin(115200);
+  while (!Serial);
+  Serial.println("Starting up KEECO HW Node...");
+  SPIFFS.begin();
+  Serial.println("[=_______]");
+  espConfig.initConfiguration();
+  Serial.println("[==______]");
+  initWifiOnBoot();
+  Serial.println("[===_____]");
+  initWebserver();
+  Serial.println("[====____]");
+  initMqtt();
+  Serial.println("[=====___]");
+  initIO();
+  Serial.println("[======__]");
+  InitOTA();
+  Serial.println("[=======_]");
+  timer.every(5000, timerCallback);
+  Serial.println("[========]");
+  Serial.println("Welcome to KEECO HW Node version 3.2!");
+  Serial.println("Send {\"command\":\"help\"} to see a list of commands");
 }
 
 void loop() {
-    timer.tick();
-    webserverInLoop();
-    mqttInLoop();
-    mdnsInLoop();
-    readIO();
-    OTA_inLoop();
+  timer.tick();
+  webserverInLoop();
+  mqttInLoop();
+  mdnsInLoop();
+  IOprocessInLoop();
+  OTAInLoop();
+  espConfig.serialCmdCheckInLoop();
 }

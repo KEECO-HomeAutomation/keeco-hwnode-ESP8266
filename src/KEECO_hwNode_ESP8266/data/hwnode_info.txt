@@ -1,1 +1,0 @@
-{"uuid":"UUID_PLACEHOLDER","name":"KEECOSwitch","endpoints":[{"name":"SubTopic1","output":true,"range":"0,1"},{"name":"SubTopic2","output":true,"range":"0,1"}],"templates":[{"name":"switch","mappings":[{"name":"on","endpoint":"SubTopic1"}]},{"name":"switch","mappings":[{"name":"on","endpoint":"SubTopic1"}]}]}

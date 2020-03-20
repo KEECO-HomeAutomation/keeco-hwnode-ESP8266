@@ -1,11 +1,11 @@
-void wifiInitOnBoot() {
+void initWifiOnBoot() {
     int wifiConnWait = 0;
-    sprintf(AP_SSID, "KEECO_AP_%06X", ESP.getChipId());
+    sprintf(espConfig.wifiAP.ssid, "KEECO_AP_%06X", ESP.getChipId());
     WiFi.mode(WIFI_STA);
     WiFi.onEvent(WiFiEvent);
     WiFi.setAutoReconnect(true);
     WiFi.hostname("KKECO_HW_Node");
-    WiFi.begin(WiFi_SSID, WiFi_Password);
+    WiFi.begin(espConfig.wifiSTA.ssid, espConfig.wifiSTA.password);
 #ifdef DEBUG
     Serial.println("Connecting to WiFi...");
 #endif
@@ -16,12 +16,12 @@ void wifiInitOnBoot() {
     if (wifiConnWait < 60) {
 #ifdef DEBUG
         Serial.println("");
-        Serial.print("Connected to Wifi");
-        Serial.println(WiFi_SSID);
+        Serial.print("Connected to Wifi: ");
+        Serial.println(espConfig.wifiSTA.ssid);
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());
 #endif
-        wifiIsConnected = true;
+        espConfig.statuses.wifiIsConnected = true;
     }
     else {
         startAPServices();
@@ -29,25 +29,28 @@ void wifiInitOnBoot() {
     start_mDNS();
 }
 
+/*
+ * You need to call MDNS.NotifyAPChange() to properly handle the STA <-> AP changes from the MDNS perspective
+ */
 
 void startAPServices() {
     WiFi.softAPConfig(apIP, apIP, netMsk);
-    WiFi.softAP(AP_SSID, AP_Password);
+    WiFi.softAP(espConfig.wifiAP.ssid, espConfig.wifiAP.password);
 #ifdef DEBUG
     Serial.println("Soft AP Running...");
 #endif
-    if (mdnsRunning) {
+    if (espConfig.statuses.mdnsRunning) {
         MDNS.notifyAPChange();
     }
-    softAPRunning = true;
+    espConfig.statuses.softApRunning = true;
 }
 
 void stopAPServices() {
     WiFi.softAPdisconnect(true);
-    if (mdnsRunning) {
+    if (espConfig.statuses.softApRunning) {
         MDNS.notifyAPChange();
     }
-    softAPRunning = false;
+    espConfig.statuses.softApRunning = false;
 #ifdef DEBUG
     Serial.println("Soft AP is Stopped");
 #endif
