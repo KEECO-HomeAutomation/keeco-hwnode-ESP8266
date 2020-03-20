@@ -31,7 +31,7 @@ What things you need to install the software and how to install them
 
 - Connect to your softAP (password: 12345678) and navigate to your device's IP address in your web-browser
 
-- Or by connecting to the serial port use: {command:"wifi", "ssid":"___","password":"____"}
+- Or by connecting to the serial port use: {command:"wifi", "ssid":"....", "password":"...."}
 
 - Set your TLS Fingerprint via the serial port or via the webpage
 
