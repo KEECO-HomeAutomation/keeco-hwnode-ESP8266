@@ -4,9 +4,10 @@ Code that runs on ESP8266 targets converting them to hardware nodes that can con
 
 ## Getting Started
 
-The project requires uploading the data folder to the ESP8266 device. The project includes a tools folder with a jar file. It enables an "ESP8266 Sketch Data Upload" menu item in the Arduino IDE where you can do so. Also after downloading the program itself you can download data to your device using a web browser.
+This application is a framework that can be used for various purposes. The actual code in Manage_IO.ino represents a MQTT controlled gate lock with RFID scanning. To have a different functionality you only need to change the content of Manage_IO.ino
 
-Navigate to your device's IP address and choose from the available options (links).
+Upload the application to your device and use {"command":"help"} in the serial interface or navigate to your device's IP address and choose from the available options.
+The default password for the web interface is "12345678"
 
 ### Prerequisites
 
@@ -16,25 +17,26 @@ What things you need to install the software and how to install them
 
 - Non-shipping libraries are included with the related URL commented
 
-- On the server side you need a KEECO HUB device to enjoy full functionality.
-
 - For configuring the Device to join a WiFi network you only need a web-browser 
 
 ### Installing
 
 - Pull the project from GitHub
 
-- Using your Arduino IDE download the data folder by using the "ESP8266 Sketch Data Upload" menu item
-
 - Build and download you code
 
 - Observe your device's soft AP address in the Serial Monitor
 
+- Use {"command":"help"} via the serial port to see the list of available commands 
+
 - Connect to your softAP (password: 12345678) and navigate to your device's IP address in your web-browser
+
+- Or by connecting to the serial port use: {command:"wifi", "ssid":"___","password":"____"}
+
+- Set your TLS Fingerprint via the serial port or via the webpage
 
 - Connect your device to your infrastructure WiFi network
 
-- Modify the txt file in the data folder if neccessary and reupload it - this step is needed if you are specifying a new schema
 
 
 ## Running the tests
