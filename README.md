@@ -38,15 +38,19 @@ What things you need to install the software and how to install them
 ### Screenshots
 
 Login Page
+
 ![Login page](https://i.imgur.com/sRYtBYO.jpg)
 
 General Settings
+
 ![General Settings page](https://imgur.com/mkoUqyW.jpg)
 
 WiFi Settings
+
 ![WiFi Settings page](https://imgur.com/FmE9RwV.jpg)
 
 Serial Interface
+
 ![Serial Interface](https://imgur.com/PMPGhJw.jpg)
 
 
