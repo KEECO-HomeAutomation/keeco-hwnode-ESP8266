@@ -18,7 +18,7 @@ void WiFiEvent(WiFiEvent_t event) {
             if (espConfig.statuses.wifiIsConnected) {
                 if (!(espConfig.statuses.softApRunning)) {
                     startAPServices();
-                    Serial.println("AP Services Started");
+                    Serial.println("AP Services Started (192.168.4.1)");
                 }
             }
             espConfig.statuses.wifiIsConnected = false;
