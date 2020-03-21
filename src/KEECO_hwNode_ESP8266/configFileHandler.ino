@@ -98,7 +98,7 @@ void ConfigurationHandler::storeUUID() {
   configDoc["uuid"] = deviceUUID;
   saveConfig();
 #ifdef DEBUG
-  Serial.println("TLS Fingerprint was updated");
+  Serial.println("UUID was updated");
   Serial.println(tempContentSerd);
 #endif
 }
@@ -106,7 +106,7 @@ void ConfigurationHandler::storeMqttSrv() {
   configDoc["mqtt"] = mqttServer;
   saveConfig();
 #ifdef DEBUG
-  Serial.println("TLS Fingerprint was updated");
+  Serial.println("MQTT Server was updated");
   Serial.println(tempContentSerd);
 #endif
 }

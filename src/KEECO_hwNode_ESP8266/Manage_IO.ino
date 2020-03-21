@@ -97,7 +97,7 @@ bool readRFID() {
     }
     result = "{\"status\":\"read\",\"result\":\"" + nuidPICC[0] + nuidPICC[1] + nuidPICC[2] + nuidPICC[3] + "\"}";
   }
-  Serial.println(F("The Result is: "));
+  Serial.println("The Result is: ");
   Serial.println(result);
   result.getBytes(mqtt_send_buffer, 64);
   client.publish(rfid_topic, mqtt_send_buffer, result.length());
@@ -120,8 +120,10 @@ void mqttReceivedCallback(char* topic, byte* payload, unsigned int length) {
     PDU[i] = char(payload[i]);
     PDU[i + 1] = '\0';
   }
+#ifdef DEBUG
   Serial.println("MQTT payload received:");
   Serial.println(PDU);
+#endif
   if (strcmp(PDU, relay_code) == 0) {
     digitalWrite(relay_pin, HIGH);
     CharToByte(unlocked_text, mqtt_send_buffer, 8);
