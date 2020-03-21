@@ -35,9 +35,19 @@ What things you need to install the software and how to install them
 - Set your TLS Fingerprint via the serial port or via the webpage
 - Connect your device to your infrastructure WiFi network
 
+### Screenshots
 
+Login Page
+![Login page](https://imgur.com/sRYtBYO)
 
+General Settings
+![General Settings page](https://imgur.com/mkoUqyW)
 
+WiFi Settings
+![WiFi Settings page](https://imgur.com/FmE9RwV)
+
+Serial Interface
+![Serial Interface](https://imgur.com/PMPGhJw)
 
 
 
