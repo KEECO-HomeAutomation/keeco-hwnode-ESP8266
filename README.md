@@ -6,6 +6,7 @@ Code that runs on ESP8266 targets converting them to hardware nodes that can con
 
 This application is a framework that can be used for various purposes. The actual code in Manage_IO.ino represents a MQTT controlled gate lock with RFID scanning. To have a different functionality you only need to change the content of Manage_IO.ino
 
+
 Main features:
 - OTA Enabled
 - TLS fingerprint validation for MQTT communication
@@ -15,6 +16,10 @@ Main features:
 - Web interface for configuration (default password "12345678"). Automatically logged out in 5 minutes after login.
 - SPIFFS to store configuration in JSON file
 
+Upload the application to your device and use {"command":"help"} in the serial interface or navigate to your device's IP address and choose from the available options.
+The default password for the web interface is "12345678"
+
+
 ### Prerequisites
 
 What things you need to install the software and how to install them
@@ -22,7 +27,7 @@ What things you need to install the software and how to install them
 - Arduino IDE
 - Non-shipping libraries are included with the related URL commented
 - SPIFFS is however used you do not need to upload any file
-
+- For configuring the Device to join a WiFi network you only need a web-browser 
 
 ### Installing
 
