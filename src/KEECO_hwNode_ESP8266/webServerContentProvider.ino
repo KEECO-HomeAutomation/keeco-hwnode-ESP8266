@@ -180,7 +180,7 @@ void handleSetUUID() {                         // If a POST request is made to U
   else {
     webserver.arg("mqtt").toCharArray(temp_uuid, 64);
     strcpy(espConfig.deviceUUID, temp_uuid);
-    espConfig.storeFingerprint();
+    espConfig.storeUUID();
     webserver.sendHeader("Location", "/", true);
     webserver.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     webserver.sendHeader("Pragma", "no-cache");
@@ -199,7 +199,7 @@ void handleSetMqttSrv() {                         // If a POST request is made t
   else {
     webserver.arg("mqtt").toCharArray(temp_mqttsrv, 64);
     strcpy(espConfig.mqttServer, temp_mqttsrv);
-    espConfig.storeFingerprint();
+    espConfig.storeMqttSrv();
     webserver.sendHeader("Location", "/", true);
     webserver.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     webserver.sendHeader("Pragma", "no-cache");
