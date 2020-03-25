@@ -26,7 +26,6 @@ void loginWebserver() {
   webserver.on("/wifisave", handleWifiSave);
   webserver.on("/info", handleNodeInfo);
   webserver.on("/mdns", mdnsQueryHandler);
-  webserver.on("/settings", HTTP_GET, handleGetSettings);
   webserver.on("/send_new_settings", HTTP_POST, handleReceiveSettings);
   webserver.on("/login", HTTP_POST, handleLoginAttempt);
   webserver.begin();

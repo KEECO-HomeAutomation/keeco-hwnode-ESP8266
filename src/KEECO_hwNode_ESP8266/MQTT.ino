@@ -43,7 +43,6 @@ void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
 
 boolean mqttReconnect() {
   if (client.connect(espConfig.wifiAP.ssid, espConfig.mqttUsername, espConfig.mqttPassword)) {
-    //if (client.connect(espConfig.wifiAP.ssid, "espwithtls", "keeco20")) {
     for (int i = 0; i < espConfig.mqttSubTopicCount ; i++ ) {
       appendSubtopic(espConfig.mqttSubTopic[i]);
       Serial.println("Subscribed to MQTT Topic: ");

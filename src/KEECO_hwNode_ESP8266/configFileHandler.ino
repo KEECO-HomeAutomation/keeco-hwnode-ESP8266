@@ -134,17 +134,17 @@ bool ConfigurationHandler::parseJsonPacket() {
   if (strcmp(command, "help") == 0) {
     Serial.println("Available commands:");
     Serial.println("{Set new SSID and Password:");
-    Serial.println("{'command':'wifi, 'ssid':'___', 'password':'____'}");
+    Serial.println("{\"command\":\"wifi\", \"ssid\":\"___\", \"password\":\"___\"}");
     Serial.println("Set new MQTT Server:");
-    Serial.println("{'command':'mqtt', 'server':'___'}");
+    Serial.println("{\"command\":\"mqtt\", \"server\":\"___\"}");
     Serial.println("Set new TLS fingerprint:");
-    Serial.println("{'command':'fingerprint', 'fingerprint':'___'}");
-    Serial.println("Save current settings into SPIFFS");
-    Serial.println("{'command':'save'}");
-    Serial.println("Reset device");
-    Serial.println("{'command':'reset'}");
-    Serial.println("Read settings JSON string");
-    Serial.println("{'command':'read'}");
+    Serial.println("{\"command\":\"fingerprint\", \"fingerprint\":\"___\"}");
+    Serial.println("Save current settings into SPIFFS:");
+    Serial.println("{\"command\":\"save\"}");
+    Serial.println("Reset device:");
+    Serial.println("{\"command\":\"reset\"}");
+    Serial.println("Read settings JSON string:");
+    Serial.println("{\"command\":\"read\"}");
   }
   return true;
 }
