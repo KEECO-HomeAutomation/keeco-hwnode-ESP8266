@@ -26,7 +26,9 @@ class ConfigurationHandler {
     stats statuses;
 
     char hostString[17];                //for the mDNS identification, name of the Hardware Node. Populated in the start_mDNS() function
-    char *mqttServer;                   //MQTT server address
+    char mqttServer[64];                   //MQTT server address
+    char mqttUsername[64];
+    char mqttPassword[64];
     char *mqttSubTopic[16];             //MQTT topics to subscribe
     int mqttSubTopicCount;              //number of MQTT subscribe topics
     char deviceUUID[37];                //#DeviceUUID - identifies the device at the server application
@@ -34,10 +36,7 @@ class ConfigurationHandler {
     ConfigurationHandler(void);         //Constructor - Assigning values to variables
     char* getContentSerd();             //Get configurations JSON string
     void initConfiguration(void);       //Load configuration from file and init file if originally not found
-    void storeWifiCredentials(void);    //Save WiFi credentials to file
-    void storeFingerprint(void);        //Store new TLS fingerprint
-    void storeMqttSrv(void);
-    void storeUUID(void);
+    void updateConfigJSON(void);        //Load the content of the ConfigurationHandler object into the Config JSON object
     void saveConfig(void);              //Save config to file
     void serialCmdCheckInLoop(void);    //Check if serial port has received something and process
 
@@ -46,10 +45,10 @@ class ConfigurationHandler {
     char* defaultJson;                  //Default JSON string if file was not found
     byte uuidNumber[16];                //UUID byte array if file was not found
     String uuidStr;                     //UUID string for the device
-    char tempContentSerd[256];          //JSON parsing uses the original string as buffer thus copies are created manually. This variable stores the current readable string
-    char tempContentDeserd[256];
+    char tempContentSerd[400];          //JSON parsing uses the original string as buffer thus copies are created manually. This variable stores the current readable string
+    char tempContentDeserd[400];
     char serialData[100];               //Raw data received from the serial port
-    StaticJsonDocument<200> configDoc;  //Parser object to work with the configuration data
+    StaticJsonDocument<500> configDoc;  //Parser object to work with the configuration data
     DeserializationError configError;   //Error for configDoc parsing
     StaticJsonDocument<200> configUartDoc;    //Parser object to work with the commands from the serial port
     DeserializationError error;         //Error for the doc parsing
