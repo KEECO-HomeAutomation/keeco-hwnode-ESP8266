@@ -6,15 +6,15 @@ PubSubClient client(wifiClient);
 long mqttLastConnAttempt = 0;
 
 /*
- * We use TLS certifications to encrypt the communication.
- * WiFiClientSecure defines that the communication happens with TLS
- * The fingerprint can be extracted on your computer from the cert file. We only use the fingerprint and not the whole cert not to take too much memory for this.
- * Please note that you need to call the .verfiy function to actually check the fingerprint.
- * It is important to understand that with this TLS method we achieve two things: 
- *    1.) Integrity   - we make sure we connect to the right server 
- *    2.) Encryption  - the data sent over the connection is encrypted (as defined in the cert file)
- * This is a great tutorial to create your own TLS cert http://www.steves-internet-guide.com/mosquitto-tls/
- */
+   We use TLS certifications to encrypt the communication.
+   WiFiClientSecure defines that the communication happens with TLS
+   The fingerprint can be extracted on your computer from the cert file. We only use the fingerprint and not the whole cert not to take too much memory for this.
+   Please note that you need to call the .verfiy function to actually check the fingerprint.
+   It is important to understand that with this TLS method we achieve two things:
+      1.) Integrity   - we make sure we connect to the right server
+      2.) Encryption  - the data sent over the connection is encrypted (as defined in the cert file)
+   This is a great tutorial to create your own TLS cert http://www.steves-internet-guide.com/mosquitto-tls/
+*/
 
 void initMqtt() {
   wifiClient.setFingerprint(espConfig.fingerprint);
@@ -42,7 +42,7 @@ void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
 }
 
 boolean mqttReconnect() {
-  if (client.connect(espConfig.wifiAP.ssid, "espwithtls", "keeco20")) {
+  if (client.connect(espConfig.wifiAP.ssid, espConfig.mqttUsername, espConfig.mqttPassword)) {
     for (int i = 0; i < espConfig.mqttSubTopicCount ; i++ ) {
       appendSubtopic(espConfig.mqttSubTopic[i]);
       Serial.println("Subscribed to MQTT Topic: ");

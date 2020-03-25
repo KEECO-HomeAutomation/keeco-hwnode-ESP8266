@@ -26,6 +26,7 @@
 
 #define DEBUG     //to enable debug purpose serial output 
 #define OTA       //to enable OTA updates
+#define CSS       //makes the web interface nicer but also slower and less reliable
 
 ESP8266WebServer webserver(80);
 
