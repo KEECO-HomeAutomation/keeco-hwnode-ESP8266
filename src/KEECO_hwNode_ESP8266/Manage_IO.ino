@@ -32,7 +32,7 @@ char unlocked_text[] = "UNLOCKED";
 int relay_pin = 15;
 char *relay_code = "9988";
 
-void announceLockState() {
+void announceNodeState() {
   CharToByte(locked_text, mqtt_send_buffer, 6);
   client.publish(status_topic, mqtt_send_buffer, 6);
 }
@@ -51,7 +51,7 @@ void initIO() {
   appendSubtopic(status_topic);
   Serial.println("RFID Topic publishing:");
   Serial.println(rfid_topic);
-  announceLockState();
+  announceNodeState();
 
   SPI.begin(); // Init SPI bus
   rfid.PCD_Init(); // Init MFRC522
@@ -115,6 +115,10 @@ bool timerCallback(void *) {
 
 void mqttReceivedCallback(char* topic, byte* payload, unsigned int length) {
   //DO NOT DELETE this function
+#ifdef DEBUG
+  Serial.print("Received topic:");
+  Serial.println(topic);
+#endif
   char PDU[length];
   for (unsigned int i = 0; i < (length); i++) {
     PDU[i] = char(payload[i]);
