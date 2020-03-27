@@ -35,7 +35,7 @@ What things you need to install the software and how to install them
 - Build and download you code
 - Observe your device's soft AP address in the Serial Monitor
 - Use {"command":"help"} via the serial port to see the list of available commands 
-- Connect to your softAP (password: 12345678) and navigate to your device's IP address in your web-browser
+- Connect to your softAP (password: 12345678) and navigate to your device's IP address (default: 192.168.4.1) in your web-browser
 - Or by connecting to the serial port use: {command:"wifi", "ssid":"....", "password":"...."}
 - Set your TLS Fingerprint via the serial port or via the webpage
 - Connect your device to your infrastructure WiFi network
@@ -48,11 +48,11 @@ Login Page
 
 General Settings
 
-![General Settings page](https://imgur.com/mkoUqyW.jpg)
+![General Settings page](https://imgur.com/zpNqMee.jpg)
 
 WiFi Settings
 
-![WiFi Settings page](https://imgur.com/FmE9RwV.jpg)
+![WiFi Settings page](https://imgur.com/suEIvZn.jpg)
 
 Serial Interface
 
