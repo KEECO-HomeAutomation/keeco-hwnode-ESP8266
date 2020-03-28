@@ -29,7 +29,7 @@ class ConfigurationHandler {
     char mqttServer[64];                   //MQTT server address
     char mqttUsername[64];
     char mqttPassword[64];
-    char *mqttSubTopic[16];             //MQTT topics to subscribe
+    char *mqttSubTopic[32];             //MQTT topics to subscribe
     int mqttSubTopicCount;              //number of MQTT subscribe topics
     char deviceUUID[37];                //#DeviceUUID - identifies the device at the server application
     char fingerprint[64];

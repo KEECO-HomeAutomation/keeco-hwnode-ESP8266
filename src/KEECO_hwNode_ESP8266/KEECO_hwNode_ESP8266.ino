@@ -27,6 +27,7 @@
 #define DEBUG     //to enable debug purpose serial output 
 #define OTA       //to enable OTA updates
 #define CSS       //makes the web interface nicer but also slower and less reliable
+#define TIMERVALUE 5000
 
 ESP8266WebServer webserver(80);
 
@@ -37,6 +38,8 @@ ConfigurationHandler espConfig;
 
 //timer for various tasks - for future scalability
 auto timer = timer_create_default();
+
+//https://bit.ly/2WPt42i
 
 
 /*
@@ -71,10 +74,11 @@ void setup() {
   Serial.println("[======__]");
   InitOTA();
   Serial.println("[=======_]");
-  timer.every(5000, timerCallback);
+  timer.every(TIMERVALUE, timerCallback);
   Serial.println("[========]");
   Serial.println("Welcome to KEECO HW Node version 3.2!");
   Serial.println("Send {\"command\":\"help\"} to see a list of commands");
+  Serial.println("https://bit.ly/2WPt42i");  
 }
 
 void loop() {

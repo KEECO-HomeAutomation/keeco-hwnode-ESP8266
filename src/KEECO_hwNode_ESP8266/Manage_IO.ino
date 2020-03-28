@@ -1,141 +1,103 @@
 /*
    The code below is divided into 4 main segments:
-   initIO()                   -   This code is called during device init. Place your init code here.
-   IOprocessInLoop()          -   This code is called with every iteration in the main loop/
-   timerCallback()            -   This code is called every N seconds (5 by default) using the timer
-   mqttReceivedCallback(char* topic, byte* payload, unsigned int length)    -    This code is called everytime a subscribed MQTT topic receives a new message
-   CharToByte(char* chars, byte* bytes, unsigned int count)                 -    Helper function for MQTT publish
+     initIO()                   -   This code is called during device init. Place your init code here.
+     IOprocessInLoop()          -   This code is called with every iteration in the main loop/
+     timerCallback()            -   This code is called every N seconds (5 by default) using the timer
+     mqttReceivedCallback(char* topic, byte* payload, unsigned int length)    -    This code is called everytime a subscribed MQTT topic receives a new message
+
+   These additional helpers are available for you:
+     CharToByte(char* chars, byte* bytes, unsigned int count)   -   Helper function for MQTT publish - publish requires byte array
+     mqtt_send_buffer[64]                                       -   To temporarly store the message to be published
+     announceNodeState()                                        -   Called during MQTT connection init. Can be called standalone at other times as well.
+     appendSubtopic(char *topic)                                -   Appends the given topic to the UUID and stores the result in the topic. So all topics look like this: UUID/<status_topic>. Important to call once per topic only!
 */
 
-#include <SPI.h>
-#include <MFRC522.h>
-#define SS_PIN 4
-#define RST_PIN 5
+/*
+   Place your Arduino Shield specific #includes here
+*/
 
 
-MFRC522 rfid(SS_PIN, RST_PIN); // Instance of the class
-MFRC522::MIFARE_Key key;
+/*
+   When your device connects to an MQTT broker it announces its state in the UUID/<status_topic> topic
+   Place your additional variable inits here
+*/
 
-unsigned long RFID_timing;
-bool relay_state = false;
-
-// Init array that will store new NUID
-String nuidPICC[4];
-
-//mqtt content buffer
 byte mqtt_send_buffer[64];
-char rfid_topic[128] = "/RFID_reader";
 char status_topic[128] = "/state";
-char locked_text[] = "LOCKED";
-char unlocked_text[] = "UNLOCKED";
+char status_text[128] = "Device Online";
 
-int relay_pin = 15;
-char *relay_code = "9988";
-
-void announceNodeState() {
-  CharToByte(locked_text, mqtt_send_buffer, 6);
-  client.publish(status_topic, mqtt_send_buffer, 6);
-}
 
 void initIO() {
-  //DO NOT DELETE this function
   /*
-    List the topics to subscribe in the array below.
+    List the topics to subscribe in the array below. The UUID is automatically inserted before the topic(s) below
     Make sure to set the mqttSubTopicCount variable accordingly.
+    Place your additional init code here.
   */
   espConfig.mqttSubTopic[0] = "/setRelay1";
   espConfig.mqttSubTopicCount = 1;
-
-  pinMode(relay_pin, OUTPUT); //relay output
-  appendSubtopic(rfid_topic);
   appendSubtopic(status_topic);
-  Serial.println("RFID Topic publishing:");
-  Serial.println(rfid_topic);
-  announceNodeState();
-
-  SPI.begin(); // Init SPI bus
-  rfid.PCD_Init(); // Init MFRC522
-  for (byte i = 0; i < 6; i++) {
-    key.keyByte[i] = 0xFF;
-  }
 }
 
 
 void IOprocessInLoop() {
-  //DO NOT DELETE this function
-  readRFID();
-  if (relay_state) {
-    if (RFID_timing < millis()) {
-      relay_state = false;
-      digitalWrite(relay_pin, LOW);
-      Serial.println("Relay switched off after timeout");
-      CharToByte(locked_text, mqtt_send_buffer, 6);
-      client.publish(status_topic, mqtt_send_buffer, 6);
-    }
-  }
-}
-
-bool readRFID() {
-  String result = "";
-
-  if ( ! rfid.PICC_IsNewCardPresent())
-    return false;
-  if ( ! rfid.PICC_ReadCardSerial())
-    return false;
-
-  MFRC522::PICC_Type piccType = rfid.PICC_GetType(rfid.uid.sak);
-
-  // Check is the PICC of Classic MIFARE type
-  if (piccType != MFRC522::PICC_TYPE_MIFARE_MINI &&
-      piccType != MFRC522::PICC_TYPE_MIFARE_1K &&
-      piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
-    result =  "{\"status\":\"error\",\"result\":\"invalidcard\"}";
-  }
-  else {
-    for (byte i = 0; i < 4; i++) {
-      nuidPICC[i] = String(rfid.uid.uidByte[i], HEX);
-    }
-    result = "{\"status\":\"read\",\"result\":\"" + nuidPICC[0] + nuidPICC[1] + nuidPICC[2] + nuidPICC[3] + "\"}";
-  }
-  Serial.println("The Result is: ");
-  Serial.println(result);
-  result.getBytes(mqtt_send_buffer, 64);
-  client.publish(rfid_topic, mqtt_send_buffer, result.length());
-
-  rfid.PICC_HaltA();
-  rfid.PCD_StopCrypto1();
-  return true;
+  /*
+     Place your code here that needs to be executed in every loop() iteration in the main
+     To publish on MQTT use theis function:
+     void mqttPublish(char* topic, char* text);
+  */
 }
 
 
 bool timerCallback(void *) {
-  //DO NOT DELETE this function
+  /*
+     This function is called periodically defined by TIMERVALUE, 5000ms by default
+  */
+  Serial.println("Called every 5 sec");
 }
 
 
 void mqttReceivedCallback(char* topic, byte* payload, unsigned int length) {
-  //DO NOT DELETE this function
-#ifdef DEBUG
-  Serial.print("Received topic:");
-  Serial.println(topic);
-#endif
+  /*
+     Called every time a message arrives to a subscribed MQTT topic
+     If you subscribe to multiple topics please note that you need to manually select the correct topics here for your application with strcmp for example.
+     char PDU[] contains the received byte array to char array so you can use strcmp and such.
+  */
   char PDU[length];
   for (unsigned int i = 0; i < (length); i++) {
     PDU[i] = char(payload[i]);
     PDU[i + 1] = '\0';
   }
 #ifdef DEBUG
-  Serial.println("MQTT payload received:");
+  Serial.print("Received topic: ");
+  Serial.println(topic);
+  Serial.print("MQTT payload received: ");
   Serial.println(PDU);
 #endif
-  if (strcmp(PDU, relay_code) == 0) {
-    digitalWrite(relay_pin, HIGH);
-    CharToByte(unlocked_text, mqtt_send_buffer, 8);
-    client.publish(status_topic, mqtt_send_buffer, 8);
-    RFID_timing = millis() + 3000;
-    relay_state = true;
-    Serial.println("Relay switched on due to MQTT command");
+  /*
+     Place your code here that handles the received MQTT messages
+  */
+}
+
+
+/* ======================================================================================================================================================================================================================
+   Helpers, don't modify below!
+*/
+
+void mqttPublish(char* topic, char* text) {
+  byte bytes[strlen(text)];
+  for (unsigned int i = 0; i < strlen(text); i++) {
+    bytes[i] = (byte)text[i];
   }
+  client.publish(topic, bytes, sizeof(bytes));
+}
+
+void announceNodeState() {
+  mqttPublish(status_topic, status_text);
+#ifdef DEBUG
+  Serial.println("Device status published on MQTT: ");
+  Serial.println(status_text);
+#endif
+
 }
 
 void CharToByte(char* chars, byte* bytes, unsigned int count) {
