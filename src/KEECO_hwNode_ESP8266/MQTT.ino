@@ -4,6 +4,7 @@ PubSubClient client(wifiClient);
 
 
 long mqttLastConnAttempt = 0;
+bool mqttConnectedMinOnce = false;
 
 /*
    We use TLS certifications to encrypt the communication.
@@ -34,22 +35,21 @@ void initMqtt() {
 }
 
 void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
-#ifdef DEBUG
-  Serial.print("Received topic:");
-  Serial.println(topic);
-#endif
   mqttReceivedCallback(topic, payload, length);
 }
 
 boolean mqttReconnect() {
   if (client.connect(espConfig.wifiAP.ssid, espConfig.mqttUsername, espConfig.mqttPassword)) {
     for (int i = 0; i < espConfig.mqttSubTopicCount ; i++ ) {
-      appendSubtopic(espConfig.mqttSubTopic[i]);
+      if (! mqttConnectedMinOnce) {
+        appendSubtopic(espConfig.mqttSubTopic[i]);
+      }
       Serial.println("Subscribed to MQTT Topic: ");
       Serial.println(espConfig.mqttSubTopic[i]);
       client.subscribe(espConfig.mqttSubTopic[i]);
+      mqttConnectedMinOnce = true;
     }
-    announceLockState();
+    announceNodeState();
 #ifdef DEBUG
     Serial.println("Connected to MQTT Server");
 #endif
@@ -75,6 +75,7 @@ void mqttInLoop() {
   }
   client.loop();
 }
+
 
 void appendSubtopic(char *inputTopic) {
   char temp_topic[128] = " ";

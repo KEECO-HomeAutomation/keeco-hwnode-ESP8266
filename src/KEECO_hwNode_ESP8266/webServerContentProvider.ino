@@ -50,6 +50,7 @@ void handleRoot() {
                         "<br><a href='/wifisettings'>WiFi Settings</a>"
                         "<br><a href='/info'>Display Node Info File</a>"
                         "<br><a href='/mdns'>Display MQTT service providers on this network</a>"
+                        "<br><a href='https://bit.ly/2WPt42i' target='_blank'>More info about KEECO</a>"
                         "</body></html>");
   }
   else {

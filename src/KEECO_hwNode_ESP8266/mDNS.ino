@@ -8,8 +8,9 @@ void start_mDNS() {
     else  {
       espConfig.statuses.mdnsRunning = true;
 #ifdef DEBUG
-        Serial.print("mDNS Running, Hoststring with ChipID: ");
-        Serial.println(espConfig.hostString);
+        Serial.print("mDNS Running, device accessible: ");
+        Serial.print(espConfig.hostString);
+        Serial.println(".local");
 #endif
     }
 }
