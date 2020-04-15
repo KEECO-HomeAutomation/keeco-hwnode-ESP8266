@@ -68,9 +68,9 @@ void setup() {
   Serial.println("[===_____]");
   initWebserver();
   Serial.println("[====____]");
-  initIO();
-  Serial.println("[=====___]");
   initMqtt();
+  Serial.println("[=====___]");
+  initIO();
   Serial.println("[======__]");
   InitOTA();
   Serial.println("[=======_]");
