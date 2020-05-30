@@ -37,7 +37,7 @@ void loginWebserver() {
 void webserverInLoop() {
   webserver.handleClient();
   if (espConfig.statuses.authenticated) {
-    if (espConfig.statuses.auth_timestamp + AUTO_LOGOUT_TIMEOUT < millis()) {
+    if (millis() - espConfig.statuses.auth_timestamp > AUTO_LOGOUT_TIMEOUT ) {
       espConfig.statuses.authenticated = false;
       logoutWebserver();
     }
