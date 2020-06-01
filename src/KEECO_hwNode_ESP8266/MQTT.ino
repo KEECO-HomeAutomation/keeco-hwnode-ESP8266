@@ -4,7 +4,6 @@ PubSubClient client(wifiClient);
 
 
 long mqttLastConnAttempt = 0;
-bool mqttConnectedMinOnce = false;
 
 /*
    We use TLS certifications to encrypt the communication.
@@ -39,15 +38,13 @@ void mqttSubCallback(char* topic, byte* payload, unsigned int length) {
 }
 
 boolean mqttReconnect() {
+  char temp_topic[128];
   if (client.connect(espConfig.wifiAP.ssid, espConfig.mqttUsername, espConfig.mqttPassword)) {
     for (int i = 0; i < espConfig.mqttSubTopicCount ; i++ ) {
-      if (! mqttConnectedMinOnce) {
-        appendSubtopic(espConfig.mqttSubTopic[i]);
-      }
+      appendSubtopicToNew(espConfig.mqttSubTopic[i], temp_topic);
       Serial.println("Subscribed to MQTT Topic: ");
-      Serial.println(espConfig.mqttSubTopic[i]);
-      client.subscribe(espConfig.mqttSubTopic[i]);
-      mqttConnectedMinOnce = true;
+      Serial.println(temp_topic);
+      client.subscribe(temp_topic);
     }
     announceNodeState();
 #ifdef DEBUG
@@ -77,9 +74,20 @@ void mqttInLoop() {
 }
 
 
-void appendSubtopic(char *inputTopic) {
+void appendSubtopic(char *inputTopic ) {
   char temp_topic[128] = " ";
   strcpy(temp_topic, espConfig.deviceUUID);
   strcat(temp_topic, inputTopic);
   strcpy(inputTopic, temp_topic);
+}
+void appendSubtopicToNew(char *inputTopic, char *outputTopic) {
+  char temp_topic[128] = " ";
+  strcpy(temp_topic, espConfig.deviceUUID);
+  strcat(temp_topic, inputTopic);
+  strcpy(outputTopic, temp_topic);
+}
+
+void mqttPublish(char *pub_subtopic, char *temp_topic, byte *mqtt_buffer, int byte_length) {
+  appendSubtopicToNew(pub_subtopic, temp_topic);
+  client.publish(temp_topic, mqtt_buffer, byte_length);
 }
