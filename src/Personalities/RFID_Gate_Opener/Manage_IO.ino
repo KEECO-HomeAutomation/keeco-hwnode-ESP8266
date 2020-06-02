@@ -68,10 +68,10 @@ void initIO() {
     List the topics to subscribe in the array below.
     Make sure to set the mqttSubTopicCount variable accordingly.
   */
-  strcpy(espConfig.mqttSubTopic[0],"/setRelay1");
-  strcpy(espConfig.mqttSubTopic[1],"/setRelay2");
-  strcpy(espConfig.mqttSubTopic[2],"/setRelay3");
-  strcpy(espConfig.mqttSubTopic[3],"/setRelay4");
+  strcpy(espConfig.mqttSubTopic[0], "/setRelay1");
+  strcpy(espConfig.mqttSubTopic[1], "/setRelay2");
+  strcpy(espConfig.mqttSubTopic[2], "/setRelay3");
+  strcpy(espConfig.mqttSubTopic[3], "/setRelay4");
 
   espConfig.mqttSubTopicCount = 4;
 
@@ -208,6 +208,8 @@ void mqttReceivedCallback(char* topic, byte* payload, unsigned int length) {
     if (PDU[0] == '0') {
       io_byte = io_byte | B00000010;
     }
+    mqtt_send_buffer[0] = getInputState((char)io_byte, 1);
+    mqttPublish("/setRelay2/status", temp_publish_topic, mqtt_send_buffer, 1);
   }
   if (strcmp(sub_topic, "/setRelay3\0") == 0) {
     relaycmd = true;
@@ -217,6 +219,8 @@ void mqttReceivedCallback(char* topic, byte* payload, unsigned int length) {
     if (PDU[0] == '0') {
       io_byte = io_byte | B00000100;
     }
+    mqtt_send_buffer[0] = getInputState((char)io_byte, 2);
+    mqttPublish("/setRelay3/status", temp_publish_topic, mqtt_send_buffer, 1);
   }
   if (strcmp(sub_topic, "/setRelay4\0") == 0) {
     relaycmd = true;
@@ -226,6 +230,8 @@ void mqttReceivedCallback(char* topic, byte* payload, unsigned int length) {
     if (PDU[0] == '0') {
       io_byte = io_byte | B00001000;
     }
+    mqtt_send_buffer[0] = getInputState((char)io_byte, 3);
+    mqttPublish("/setRelay4/status", temp_publish_topic, mqtt_send_buffer, 1);
   }
   if (relaycmd) {
     Wire.beginTransmission(I2C_SLAVE); // transmit to device #8
