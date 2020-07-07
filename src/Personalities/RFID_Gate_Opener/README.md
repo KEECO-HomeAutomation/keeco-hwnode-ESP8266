@@ -15,14 +15,14 @@ The device can
  Download (or clone) the basic KEECO functionality code and overwrite relevant files with the files from the RFID_Gate_Opener personality.
  
  # MQTT Topics
-  - Device UUID/RFID_reader        Publishing the read RFID Tag
-  - Device UUID/state              Publishing the LOCKED/UNLOCKED state of the gate
-  - Device UUID/input1             Publishing the state of input 1 (0 or 1)
-  - Device UUID/input2             Publishing the state of input 2 (0 or 1)
-  - Device UUID/input3             Publishing the state of input 3 (0 or 1)
-  - Device UUID/input4             Publishing the state of input 4 (0 or 1)
+  - Device UUID/RFID_reader         - Publishing the read RFID Tag
+  - Device UUID/state               - Publishing the LOCKED/UNLOCKED state of the gate
+  - Device UUID/input1              - Publishing the state of input 1 (0 or 1)
+  - Device UUID/input2              - Publishing the state of input 2 (0 or 1)
+  - Device UUID/input3              - Publishing the state of input 3 (0 or 1)
+  - Device UUID/input4              - Publishing the state of input 4 (0 or 1)
 
-  - Device UUID/setRelay1          Controlling Relay1  Is always assigned to gate control and can be only switched on with the code (9988 by default)
-  - Device UUID/setRelay2          Controlling Relay2  (0 or 1)
-  - Device UUID/setRelay3          Controlling Relay3  (0 or 1)
-  - Device UUID/setRelay4          Controlling Relay4  (0 or 1)
+  - Device UUID/setRelay1           - Controlling Relay1  Is always assigned to gate control and can be only switched on with the code (9988 by default)
+  - Device UUID/setRelay2           - Controlling Relay2  (0 or 1)
+  - Device UUID/setRelay3           - Controlling Relay3  (0 or 1)
+  - Device UUID/setRelay4           - Controlling Relay4  (0 or 1)
