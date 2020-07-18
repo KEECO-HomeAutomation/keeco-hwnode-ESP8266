@@ -140,7 +140,7 @@ void handleWifiSave() {
   webserver.send ( 302, "text/plain", "");  // Empty content inhibits Content-length header so we have to close the socket ourselves.
   //webserver.client().stop(); // Stop is needed because we sent no content length
   espConfig.updateConfigJSON();
-  espConfig.saveConfig();
+  //espConfig.saveConfig();
   if (strlen(espConfig.wifiSTA.ssid) > 0) {
     WiFi.disconnect();
     WiFi.begin ( espConfig.wifiSTA.ssid, espConfig.wifiSTA.password );
@@ -163,7 +163,18 @@ void handleLoginAttempt() {
 }
 
 void handleNodeInfo() {
-  webserver.send(200, "text/html", espConfig.getContentSerd()); // Empty content inhibits Content-length header so we have to close the socket ourselves.
+  webserver.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  webserver.sendHeader("Pragma", "no-cache");
+  webserver.sendHeader("Expires", "-1");
+  webserver.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  webserver.send(200, "text/html", ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
+  webserver.sendContent(
+    "<html><head></head><body>"
+    "<h1>KEECO Node Info</h1>"
+  );
+  webserver.sendContent(String(espConfig.getContentSerd()));
+  webserver.sendContent("</body></html>");
+  webserver.client().stop();
 }
 
 void handleReceiveSettings() {
@@ -194,7 +205,7 @@ void handleReceiveSettings() {
     Serial.println(espConfig.fingerprint);
   }
   espConfig.updateConfigJSON();
-  espConfig.saveConfig();
+  //espConfig.saveConfig();
   webserver.sendHeader("Location", "/", true);
   webserver.send ( 303, "text/plain", "/");  // Empty content inhibits Content-length header so we have to close the socket ourselves.
 }

@@ -42,25 +42,21 @@ char input4_topic[16] = "/input4";
 char locked_text[] = "LOCKED";
 char unlocked_text[] = "UNLOCKED";
 
-char *relay_code = "9988";
+const char *relay_code = "9988";
 
 //for the IO extender
 const int16_t I2C_SLAVE = 0x38;
 byte io_byte = 0xFF;
+byte prevState = 0xFF;
+unsigned long lastInputSample;
 
-//for Digital Inputs
-const byte interruptPin = 3;
-volatile bool ext_interrupt = false;
-unsigned long int_timestamp;
+
 
 void announceNodeState() {
   CharToByte(locked_text, mqtt_send_buffer, 6);
   mqttPublish(status_topic, temp_publish_topic, mqtt_send_buffer, 6);
 }
 
-ICACHE_RAM_ATTR void setintflag() {
-  ext_interrupt = true;
-}
 
 void initIO() {
   //DO NOT DELETE this function
@@ -88,9 +84,6 @@ void initIO() {
     key.keyByte[i] = 0xFF;
   }
   Wire.begin(SDA_PIN, SCL_PIN); // join i2c bus (address optional for master)
-  pinMode(interruptPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), setintflag, FALLING);
-  int_timestamp = millis();
 }
 
 void IOprocessInLoop() {
@@ -109,7 +102,10 @@ void IOprocessInLoop() {
       mqttPublish(status_topic, temp_publish_topic, mqtt_send_buffer, 6);
     }
   }
-  interruptInLoop();
+  if ((millis() - lastInputSample) > 50 ) {
+    inputCheckInLoop();
+    lastInputSample = millis();
+  }
 }
 
 bool readRFID() {
@@ -146,9 +142,6 @@ bool readRFID() {
 
 bool timerCallback(void *) {
   //DO NOT DELETE this function
-  if (ext_interrupt) {
-    Serial.println("interrupt happened");
-  }
 }
 
 
@@ -250,24 +243,22 @@ void CharToByte(char* chars, byte* bytes, unsigned int count) {
     bytes[i] = (byte)chars[i];
 }
 
-void interruptInLoop() {
-  if ((millis() - int_timestamp) > INT_TIMEOUT) {
-    if (ext_interrupt) {
-      Serial.println("interrupt happened");
-      int_timestamp = millis();
-      Wire.requestFrom(I2C_SLAVE, 1);
-      char c = Wire.read();
-      Serial.println(c, BIN);
-      mqtt_send_buffer[0] = getInputState(c, 4);
-      mqttPublish(input1_topic, temp_publish_topic, mqtt_send_buffer, 1);
-      mqtt_send_buffer[0] = getInputState(c, 5);
-      mqttPublish(input2_topic, temp_publish_topic, mqtt_send_buffer, 1);
-      mqtt_send_buffer[0] = getInputState(c, 6);
-      mqttPublish(input3_topic, temp_publish_topic, mqtt_send_buffer, 1);
-      mqtt_send_buffer[0] = getInputState(c, 7);
-      mqttPublish(input4_topic, temp_publish_topic, mqtt_send_buffer, 1);
-      ext_interrupt = false;
-    }
+void inputCheckInLoop() {
+  Wire.requestFrom(I2C_SLAVE, 1);
+  byte c = byte(Wire.read());
+  c = c & 0xF0;
+  if (c != prevState) {
+    Serial.println("Input changed");
+    Serial.println(c, BIN);
+    mqtt_send_buffer[0] = getInputState(c, 4);
+    mqttPublish(input1_topic, temp_publish_topic, mqtt_send_buffer, 1);
+    mqtt_send_buffer[0] = getInputState(c, 5);
+    mqttPublish(input2_topic, temp_publish_topic, mqtt_send_buffer, 1);
+    mqtt_send_buffer[0] = getInputState(c, 6);
+    mqttPublish(input3_topic, temp_publish_topic, mqtt_send_buffer, 1);
+    mqtt_send_buffer[0] = getInputState(c, 7);
+    mqttPublish(input4_topic, temp_publish_topic, mqtt_send_buffer, 1);
+    prevState = c;
   }
 }
 byte getInputState(char value, int pin) {
