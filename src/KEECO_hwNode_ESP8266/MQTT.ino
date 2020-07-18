@@ -1,4 +1,4 @@
-WiFiClientSecure wifiClient;
+BearSSL::WiFiClientSecure wifiClient;
 PubSubClient client(wifiClient);
 #define MQTT_CONN_RETRY_WAIT 5000
 
@@ -55,22 +55,26 @@ boolean mqttReconnect() {
 }
 
 void mqttInLoop() {
-  if (!client.connected()) {
-    long now = millis();
-    if (now - mqttLastConnAttempt > MQTT_CONN_RETRY_WAIT) {
-      mqttLastConnAttempt = now;
-      if (mqttReconnect()) {
-        Serial.println("MQTT Reconnect Successful.");
-      }
-      else {
+  if (espConfig.statuses.wifiIsConnected) {
+    if (!client.connected()) {
+      long now = millis();
+      if (now - mqttLastConnAttempt > MQTT_CONN_RETRY_WAIT) {
+        mqttLastConnAttempt = now;
+        if (mqttReconnect()) {
+          Serial.println("MQTT Reconnect Successful.");
+        }
+        else {
 #ifdef DEBUG
-        Serial.println("Still no connection to MQTT Server");
-        Serial.println(client.state());
+          Serial.println("Still no connection to MQTT Server");
+          Serial.println(client.state());
 #endif
+        }
       }
     }
+    else {
+      client.loop();
+    }
   }
-  client.loop();
 }
 
 

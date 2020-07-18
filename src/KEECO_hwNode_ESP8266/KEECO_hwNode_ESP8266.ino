@@ -1,27 +1,29 @@
 /*
- * KEECO HW Node application software
- * Version 3.2
- * Developed by https://github.com/litechniks
- * 
- * Only Manage_IO needs to be modified to implement your application
- * The usecase in this code is a gate lock functionality with and RFID reader that is operated over MQTT
- * 
- * 
- */
+   KEECO HW Node application software
+   Version 3.2
+   Developed by https://github.com/litechniks
+
+   Only Manage_IO needs to be modified to implement your application
+   The usecase in this code is a gate lock functionality with and RFID reader that is operated over MQTT
+
+
+*/
 
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
 #include <WiFiClientSecure.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-#include <timer.h>             //https://github.com/contrem/arduino-timer
+#include <arduino-timer.h>             //https://github.com/contrem/arduino-timer
 #include <FS.h>
+#include <LittleFS.h>
 #include <ESP8266TrueRandom.h> //https://github.com/marvinroger/ESP8266TrueRandom, for the UUID generation
 #include <PubSubClient.h>      //https://pubsubclient.knolleary.net/api.html
 #include <ArduinoOTA.h>
 #include <WiFiUdp.h>
 #include <ArduinoJson.h>
 #include "configFileHandler.h"
+#include <stdio.h>
 
 
 #define DEBUG     //to enable debug purpose serial output 
@@ -36,6 +38,7 @@ IPAddress netMsk(255, 255, 255, 0);
 
 ConfigurationHandler espConfig;
 
+
 //timer for various tasks - for future scalability
 auto timer = timer_create_default();
 
@@ -45,7 +48,7 @@ auto timer = timer_create_default();
 /*
   Initializing the KEECO HW Node
   Serial Timeout is needed for the serial command terminal
-  SPIFFS - is used to store the configuration data - SSID, Password, mqtt_server, UUID
+  LittleFS - is used to store the configuration data - SSID, Password, mqtt_server, UUID
   espConfig - global object storing the configuration variables
   initWifiOnBoot - try to connect to Infrastructure WiFi (60 sec timeout). If not successful start AP mode. Later if disconnected from STA then AP reactivates. Also starts mDNS.
   initWebserver - webserver to set configuration parameters
@@ -60,7 +63,7 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
   Serial.println("Starting up KEECO HW Node...");
-  SPIFFS.begin();
+  LittleFS.begin();
   Serial.println("[=_______]");
   espConfig.initConfiguration();
   Serial.println("[==______]");
@@ -78,7 +81,7 @@ void setup() {
   Serial.println("[========]");
   Serial.println("Welcome to KEECO HW Node version 3.2!");
   Serial.println("Send {\"command\":\"help\"} to see a list of commands");
-  Serial.println("https://bit.ly/2WPt42i");  
+  Serial.println("https://bit.ly/2WPt42i");
 }
 
 void loop() {
