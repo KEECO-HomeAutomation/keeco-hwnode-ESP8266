@@ -3,6 +3,7 @@
 void initWebserver() {
   webserver.on("/", handleRoot);
   webserver.on("/login", HTTP_POST, handleLoginAttempt);
+  httpUpdater.setup(&webserver, update_path, update_username, update_password);
   webserver.begin();
 #ifdef DEBUG
   Serial.println("Webserver initialized...");
@@ -28,6 +29,7 @@ void loginWebserver() {
   webserver.on("/mdns", mdnsQueryHandler);
   webserver.on("/send_new_settings", HTTP_POST, handleReceiveSettings);
   webserver.on("/login", HTTP_POST, handleLoginAttempt);
+  httpUpdater.setup(&webserver, update_path, update_username, update_password);
   webserver.begin();
 #ifdef DEBUG
   Serial.println("Webserver configured to user logged in");

@@ -14,6 +14,7 @@
 #include <WiFiClientSecure.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <ESP8266HTTPUpdateServer.h>
 #include <arduino-timer.h>             //https://github.com/contrem/arduino-timer
 #include <FS.h>
 #include <LittleFS.h>
@@ -31,7 +32,12 @@
 #define CSS       //makes the web interface nicer but also slower and less reliable
 #define TIMERVALUE 5000
 
+const char* update_path = "/firmware";
+const char* update_username = "admin";
+const char* update_password = "admin";
+
 ESP8266WebServer webserver(80);
+ESP8266HTTPUpdateServer httpUpdater;
 
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);

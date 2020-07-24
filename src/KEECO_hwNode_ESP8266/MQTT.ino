@@ -46,6 +46,7 @@ boolean mqttReconnect() {
       Serial.println(temp_topic);
       client.subscribe(temp_topic);
     }
+    mqttPublishIP();
     announceNodeState();
 #ifdef DEBUG
     Serial.println("Connected to MQTT Server");
@@ -84,6 +85,7 @@ void appendSubtopic(char *inputTopic ) {
   strcat(temp_topic, inputTopic);
   strcpy(inputTopic, temp_topic);
 }
+
 void appendSubtopicToNew(char *inputTopic, char *outputTopic) {
   char temp_topic[128] = " ";
   strcpy(temp_topic, espConfig.deviceUUID);
@@ -94,4 +96,15 @@ void appendSubtopicToNew(char *inputTopic, char *outputTopic) {
 void mqttPublish(char *pub_subtopic, char *temp_topic, byte *mqtt_buffer, int byte_length) {
   appendSubtopicToNew(pub_subtopic, temp_topic);
   client.publish(temp_topic, mqtt_buffer, byte_length);
+}
+
+void mqttPublishIP(){
+  char temp_topic[128] = " ";
+  char mqtt_buffer[64] = " ";
+  char *IP_topic = "/IPaddress";
+
+  toStringIp(WiFi.localIP()).toCharArray(mqtt_buffer, 16);
+  strcpy(temp_topic, espConfig.deviceUUID);
+  strcat(temp_topic, IP_topic);
+  client.publish(temp_topic, mqtt_buffer, 16);
 }
