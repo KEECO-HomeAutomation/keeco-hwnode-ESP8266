@@ -1,6 +1,6 @@
 BearSSL::WiFiClientSecure wifiClient;
 PubSubClient client(wifiClient);
-#define MQTT_CONN_RETRY_WAIT 5000
+#define MQTT_CONN_RETRY_WAIT 300000
 
 
 long mqttLastConnAttempt = 0;

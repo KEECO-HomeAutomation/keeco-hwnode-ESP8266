@@ -33,7 +33,7 @@ void initIO() {
     Make sure to set the mqttSubTopicCount variable accordingly.
     Place your additional init code here.
   */
-  espConfig.mqttSubTopic[0] = "/setRelay1";
+  strcpy(espConfig.mqttSubTopic[0],"/setRelay1");
   espConfig.mqttSubTopicCount = 1;
   appendSubtopic(status_topic);
 }
